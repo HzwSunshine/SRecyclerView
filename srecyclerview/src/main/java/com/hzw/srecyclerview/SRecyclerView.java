@@ -35,7 +35,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     private WrapperAdapter wrapperAdapter;
     private AbsLoadFooter loadingFooter;
     private LoadListener loadListener;
-    private XRVDivider divider;
+    private SRVDivider divider;
     private View emptyView;
 
     private boolean isFirstMove = true;
@@ -74,8 +74,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     }
 
     private void init(AttributeSet attrs, int def) {
-        //初始化XRV的配置
-        initXRVConfig(attrs, def);
+        //初始化SRV的配置
+        initSRVConfig(attrs, def);
         //other
         currentScrollMode = getOverScrollMode();
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
@@ -87,10 +87,10 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
     /**
      * 获取用户的配置
-     * 所有配置的优先级为：代码设置 > xml设置 > XRVConfig配置
+     * 所有配置的优先级为：代码设置 > xml设置 > SRVConfig配置
      * 可配置的选项有：刷新头部，加载尾部，刷新高度，刷新头部的Gravity，刷新动画的Duration
      */
-    private void initXRVConfig(AttributeSet attrs, int def) {
+    private void initSRVConfig(AttributeSet attrs, int def) {
         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.SRecyclerView, def, 0);
         int height = (int) a.getDimension(R.styleable.SRecyclerView_refreshHeight, dip2px(60));
         int gravity = a.getInteger(R.styleable.SRecyclerView_refreshGravity, 1);
@@ -100,7 +100,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         dividerRight = a.getDimension(R.styleable.SRecyclerView_dividerRightMargin, 0);
         dividerLeft = a.getDimension(R.styleable.SRecyclerView_dividerLeftMargin, 0);
         a.recycle();
-        //因为XRVConfig配置的优先级最低，所以先读取此配置
+        //因为SRVConfig配置的优先级最低，所以先读取此配置
         SRecyclerViewModule config = new GetSRVModule(getContext()).getConfig();
         if (config != null) {
             refreshHeader = config.getRefreshHeader(getContext());
@@ -290,11 +290,11 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         if (isSetDivider && !isGridManager) {
             LinearLayoutManager manager = (LinearLayoutManager) layout;
             if (manager.getOrientation() == LinearLayoutManager.VERTICAL) {
-                divider = new XRVDivider(LinearLayoutManager.VERTICAL);
+                divider = new SRVDivider(LinearLayoutManager.VERTICAL);
                 divider.initVerticalDivider(dividerHeight, dividerColor, dividerLeft, dividerRight);
                 addItemDecoration(divider);
             } else if (manager.getOrientation() == LinearLayoutManager.HORIZONTAL) {
-                divider = new XRVDivider(LinearLayoutManager.HORIZONTAL);
+                divider = new SRVDivider(LinearLayoutManager.HORIZONTAL);
                 divider.initHorizontalDivider(dividerHeight, dividerColor);
                 addItemDecoration(divider);
             }
@@ -647,13 +647,13 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     /**
      * 设置LinearLayoutManager的分割线
      */
-    private class XRVDivider extends RecyclerView.ItemDecoration {
+    private class SRVDivider extends RecyclerView.ItemDecoration {
 
         private int mOrientation = LinearLayoutManager.VERTICAL;
         private float dividerHeight, leftMargin, rightMargin;
         private Paint mPaint;
 
-        XRVDivider(int orientation) {
+        SRVDivider(int orientation) {
             mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             mPaint.setStyle(Paint.Style.FILL);
             this.mOrientation = orientation;
