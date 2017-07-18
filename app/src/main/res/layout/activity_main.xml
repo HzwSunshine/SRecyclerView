@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.hzw.srecyclerviewproject.MainActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@color/colorPrimaryDark"
+            android:gravity="center"
+            android:text="SRecyclerView"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            app:layout_scrollFlags="scroll|snap" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/colorPrimaryDark"
+            android:gravity="center"
+            android:text="SRecyclerView测试，已经发布到JCenter上"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp" />
+    </android.support.design.widget.AppBarLayout>
+
+    <com.hzw.srecyclerview.SRecyclerView
+        android:id="@+id/srv_test"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#F0F0F0"
+        app:dividerColor="#BEBEBE"
+        app:dividerHeight="0.8dp"
+        app:dividerLeftMargin="10dp"
+        app:dividerRightMargin="0dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    </com.hzw.srecyclerview.SRecyclerView>
+
+</android.support.design.widget.CoordinatorLayout>

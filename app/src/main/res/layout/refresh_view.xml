@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/ll_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="bottom"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <com.hzw.srecyclerviewproject.ClockView
+            android:id="@+id/v_refresh"
+            android:layout_width="37dp"
+            android:layout_height="37dp" />
+
+        <TextView
+            android:id="@+id/tv_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:minWidth="102dp"
+            android:text="释放立即刷新..."
+            android:textColor="#333333"
+            android:textSize="14sp" />
+    </LinearLayout>
+</FrameLayout>
