@@ -12,3 +12,6 @@
 8. 支持Item的点击事件
 9. 附带一个简易的适配器，大大减少适配器的代码
 10. 默认设置为纵向的LinearLayoutManager
+
+# Download
+compile 'com.github.hzw:srecyclerview:1.0.2'
