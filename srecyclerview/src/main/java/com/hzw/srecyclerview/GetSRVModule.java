@@ -14,7 +14,7 @@ import java.util.List;
 
 class GetSRVModule {
 
-    private static final String XRV_CONFIG_VALUE = "SRecyclerViewModule";
+    private static final String SRV_CONFIG_VALUE = "SRecyclerViewModule";
     private static SRecyclerViewModule config;
 
     GetSRVModule(Context context) {
@@ -33,7 +33,7 @@ class GetSRVModule {
                     context.getPackageName(), PackageManager.GET_META_DATA);
             if (appInfo.metaData != null) {
                 for (String key : appInfo.metaData.keySet()) {
-                    if (XRV_CONFIG_VALUE.equals(appInfo.metaData.get(key))) {
+                    if (SRV_CONFIG_VALUE.equals(appInfo.metaData.get(key))) {
                         modules.add(parseConfig(key));
                     }
                 }
