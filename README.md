@@ -15,5 +15,5 @@
 
 # Download
 use Gradle:
-  [compile 'com.github.hzw:srecyclerview:1.0.2']()
+    [compile 'com.github.hzw:srecyclerview:1.0.2'](https://github.com/HzwSunshine/SRecyclerView)
   
