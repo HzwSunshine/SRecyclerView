@@ -1,5 +1,6 @@
 # SRecyclerView
 有刷新和加载功能的RecyclerView
+博客地址：http://blog.csdn.net/hzwailll/article/details/75285924
 
 主要功能有：
 1. 下拉刷新，滑到底部加载（也支持GridGridLayoutManager）
