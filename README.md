@@ -14,4 +14,6 @@
 10. 默认设置为纵向的LinearLayoutManager
 
 # Download
-compile 'com.github.hzw:srecyclerview:1.0.2'
+use Gradle:
+  [compile 'com.github.hzw:srecyclerview:1.0.2']()
+  
