@@ -13,6 +13,9 @@
 9. 附带一个简易的适配器，大大减少适配器的代码
 10. 默认设置为纵向的LinearLayoutManager
 
+![image](https://github.com/HzwSunshine/SRecyclerView/blob/master/srecyclerview.gif)
+
+
 # Download
 use Gradle:
     [compile 'com.github.hzw:srecyclerview:1.0.4'](https://github.com/HzwSunshine/SRecyclerView)
