@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.util.AttributeSet;
@@ -19,6 +20,8 @@ import android.widget.LinearLayout;
 
 public abstract class AbsRefreshHeader extends LinearLayout {
 
+    protected final static int HEADER_BOTTOM = 1;
+    protected final static int HEADER_CENTER = 2;
     protected final static int NORMAL = 0;//正常状态，或者刷新结束的状态
     protected final static int REFRESH = 1;//正在刷新的状态
     protected final static int PREPARE_NORMAL = 2;//刷新前的状态，未超过刷新临界值
@@ -41,18 +44,20 @@ public abstract class AbsRefreshHeader extends LinearLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    final void initHeader(int height, int gravity, int duration) {
-        this.duration = duration;
-        refreshHeight = height;
+    final void initHeader() {
         ViewGroup.LayoutParams params = new LinearLayoutCompat.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 0);
         setLayoutParams(params);
-        if (gravity == SRecyclerViewModule.REFRESH_BOTTOM) {
+        //获取子类的配置
+        duration = getRefreshDuration();
+        refreshHeight = getRefreshHeight();
+        int gravity = getRefreshGravity();
+        if (gravity == HEADER_BOTTOM) {
             setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
-        } else if (gravity == SRecyclerViewModule.REFRESH_CENTER) {
+        } else if (gravity == HEADER_CENTER) {
             setGravity(Gravity.CENTER);
         }
-        init(height);
+        init();
     }
 
     /**
@@ -149,17 +154,6 @@ public abstract class AbsRefreshHeader extends LinearLayout {
     }
 
     /**
-     * 如果界面销毁时，取消动画，防止内存泄露
-     * 并且调用子类的初始化状态，如果子类中有动画，则可以取消
-     */
-    final void cancelAnim() {
-        if (animator != null && animator.isRunning()) {
-            animator.cancel();
-            refresh(NORMAL, 0);
-        }
-    }
-
-    /**
      * 高度动画结束时，currentState只可能有四种状态：
      * PREPARE_REFRESH，PREPARE_NORMAL，REFRESH和NORMAL
      */
@@ -226,12 +220,41 @@ public abstract class AbsRefreshHeader extends LinearLayout {
         loadListener = listener;
     }
 
+    /*----------------------------------------获取刷新配置--------------------------------*/
+    public int getRefreshHeight() {
+        return dip2px(60);
+    }
+
+    private int dip2px(float value) {
+        final float scale = Resources.getSystem().getDisplayMetrics().density;
+        return (int) (value * scale + 0.5f);
+    }
+
+    public int getRefreshGravity() {
+        return HEADER_BOTTOM;
+    }
+
+    public int getRefreshDuration() {
+        return 200;
+    }
+    /*----------------------------------------获取刷新配置--------------------------------*/
+
+    /**
+     * SRecyclerView的onDetachedFromWindow被调用，可能SRecyclerView所在的界面要被销毁，
+     * 如果子类中有动画等未完成，可以重写此方法取消动画等耗时操作，避免造成内存泄露
+     */
+    public void srvDetachedFromWindow() {
+        if (animator != null && animator.isRunning()) {
+            animator.cancel();
+            heightChangeAnimEnd();
+            setHeight(0);
+        }
+    }
+
     /**
      * 子类刷新头初始化
-     *
-     * @param refreshHeight 刷新临界值
      */
-    public abstract void init(int refreshHeight);
+    public abstract void init();
 
 
     /**

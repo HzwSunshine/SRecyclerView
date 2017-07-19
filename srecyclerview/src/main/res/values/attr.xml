@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="SRecyclerView">
-        <attr name="refreshHeight" format="dimension" />
-        <attr name="refreshDuration" format="integer" />
         <attr name="dividerColor" format="color" />
         <attr name="dividerHeight" format="dimension" />
         <attr name="dividerLeftMargin" format="dimension" />
         <attr name="dividerRightMargin" format="dimension" />
-        <attr name="refreshGravity" format="integer">
-            <enum name="bottom" value="1" />
-            <enum name="center" value="2" />
-        </attr>
     </declare-styleable>
 </resources>

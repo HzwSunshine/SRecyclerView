@@ -85,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
         // <meta-data
         //          android:name="com.hzw.srecyclerviewproject.TestSRVModule"
         //          android:value="SRecyclerViewModule" />
-        //所以整个SRV的配置优先级为：  代码设置 > xml设置 > Module全局配置，符合日常逻辑
 
 
         //这里的适配器使用的一个简易的SRV适配器，同样也可以用于普通的RecyclerView，当然这里也可以用原生的适配器

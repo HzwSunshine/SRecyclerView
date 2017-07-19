@@ -17,11 +17,11 @@
             </intent-filter>
         </activity>
 
-        
-        <!--在此可配置全局的SRV-->
+        <!-- 在此可配置全局的SRV -->
         <!--<meta-data-->
             <!--android:name="com.hzw.srecyclerviewproject.TestSRVModule"-->
             <!--android:value="SRecyclerViewModule" />-->
+
     </application>
 
 </manifest>

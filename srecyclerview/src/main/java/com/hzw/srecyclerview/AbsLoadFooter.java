@@ -41,13 +41,18 @@ public abstract class AbsLoadFooter extends LinearLayout {
     }
 
     /**
-     * 加载结束和界面销毁时调用
-     * <p>
-     * 界面销毁时，如果当前有动画，则取消动画，防止内存泄露
+     * 加载结束
      */
     final void loadingOver() {
         setVisibility(GONE);
         loadEnd();
+    }
+
+    /**
+     * SRecyclerView的onDetachedFromWindow被调用，可能SRecyclerView所在的界面要被销毁，
+     * 如果子类中有动画等未完成，可以重写此方法取消动画等耗时操作，避免造成内存泄露
+     */
+    public void srvDetachedFromWindow() {
     }
 
     /**

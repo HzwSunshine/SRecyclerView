@@ -8,18 +8,9 @@ import android.content.Context;
  */
 public interface SRecyclerViewModule {
 
-    int REFRESH_BOTTOM = 1;
-    int REFRESH_CENTER = 2;
-
     AbsRefreshHeader getRefreshHeader(Context context);
 
     AbsLoadFooter getLoadingFooter(Context context);
-
-    int getRefreshHeight(Context context);
-
-    int getRefreshGravity();
-
-    int getRefreshDuration();
 
 
 }

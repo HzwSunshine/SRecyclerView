@@ -33,7 +33,7 @@ class SRVRefreshHeader extends AbsRefreshHeader {
     }
 
     @Override
-    public void init(int refreshHeight) {
+    public void init() {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.srv_refresh_header, this, false);
         tips = (TextView) view.findViewById(R.id.tv_src_refreshTips);
         progress = view.findViewById(R.id.pb_srv_refreshProgress);
@@ -56,9 +56,6 @@ class SRVRefreshHeader extends AbsRefreshHeader {
                 progress.setVisibility(GONE);
                 icon.setVisibility(VISIBLE);
                 tips.setText(getContext().getString(R.string.refresh_normal));
-                if (upAnim != null) upAnim.cancel();
-                if (downAnim != null) downAnim.cancel();
-                icon.clearAnimation();
                 isUp = true;
                 break;
             case REFRESH:

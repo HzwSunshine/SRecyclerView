@@ -1,7 +1,6 @@
 package com.hzw.srecyclerview;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -20,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
-
 /**
  * 功能：添加滑动监听加载数据
  * Created by 何志伟 on 2017/7/6.
@@ -35,6 +33,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     private WrapperAdapter wrapperAdapter;
     private AbsLoadFooter loadingFooter;
     private LoadListener loadListener;
+    private GetSRVModule module;
     private SRVDivider divider;
     private View emptyView;
 
@@ -45,16 +44,12 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     private boolean isRefreshEnable;
     private boolean isPullUp;
 
+    private int currentScrollMode;
     private float dividerHeight;
     private float dividerRight;
     private float dividerLeft;
     private int dividerColor;
-
-    private int currentScrollMode;
-    private int refreshGravity;
-    private int refreshHeight;
     private int appBarState;
-    private int duration;
     private float lastY;
 
 
@@ -74,48 +69,18 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     }
 
     private void init(AttributeSet attrs, int def) {
-        //初始化SRV的配置
-        initSRVConfig(attrs, def);
-        //other
+        TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.SRecyclerView, def, 0);
+        dividerHeight = a.getDimension(R.styleable.SRecyclerView_dividerHeight, 0);
+        dividerColor = a.getColor(R.styleable.SRecyclerView_dividerColor, NO_COLOR);
+        dividerRight = a.getDimension(R.styleable.SRecyclerView_dividerRightMargin, 0);
+        dividerLeft = a.getDimension(R.styleable.SRecyclerView_dividerLeftMargin, 0);
+        a.recycle();
         currentScrollMode = getOverScrollMode();
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         setLayoutManager(manager);
         isLoadingEnable = true;
         isRefreshEnable = true;
-    }
-
-    /**
-     * 获取用户的配置
-     * 所有配置的优先级为：代码设置 > xml设置 > SRVConfig配置
-     * 可配置的选项有：刷新头部，加载尾部，刷新高度，刷新头部的Gravity，刷新动画的Duration
-     */
-    private void initSRVConfig(AttributeSet attrs, int def) {
-        TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.SRecyclerView, def, 0);
-        int height = (int) a.getDimension(R.styleable.SRecyclerView_refreshHeight, dip2px(60));
-        int gravity = a.getInteger(R.styleable.SRecyclerView_refreshGravity, 1);
-        int duration = a.getInteger(R.styleable.SRecyclerView_refreshDuration, 200);
-        dividerHeight = a.getDimension(R.styleable.SRecyclerView_dividerHeight, 0);
-        dividerColor = a.getColor(R.styleable.SRecyclerView_dividerColor, NO_COLOR);
-        dividerRight = a.getDimension(R.styleable.SRecyclerView_dividerRightMargin, 0);
-        dividerLeft = a.getDimension(R.styleable.SRecyclerView_dividerLeftMargin, 0);
-        a.recycle();
-        //因为SRVConfig配置的优先级最低，所以先读取此配置
-        SRecyclerViewModule config = new GetSRVModule(getContext()).getConfig();
-        if (config != null) {
-            refreshHeader = config.getRefreshHeader(getContext());
-            loadingFooter = config.getLoadingFooter(getContext());
-            refreshHeight = config.getRefreshHeight(getContext());
-            this.duration = config.getRefreshDuration();
-            refreshGravity = config.getRefreshGravity();
-            if (refreshHeight == 0) refreshHeight = height;
-            if (this.duration == 0) this.duration = duration;
-            if (refreshGravity == 0) refreshGravity = gravity;
-        } else {
-            refreshHeight = height;
-            refreshGravity = gravity;
-            this.duration = duration;
-        }
     }
 
     @Override
@@ -174,8 +139,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (refreshHeader != null) refreshHeader.cancelAnim();
-        if (loadingFooter != null) loadingFooter.loadingOver();
+        if (refreshHeader != null) refreshHeader.srvDetachedFromWindow();
+        if (loadingFooter != null) loadingFooter.srvDetachedFromWindow();
     }
 
     @Override
@@ -319,19 +284,15 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         }
     }
 
-    private static int dip2px(float dpValue) {
-        final float scale = Resources.getSystem().getDisplayMetrics().density;
-        return (int) (dpValue * scale + 0.5f);
-    }
-
-
     /*------------------------------------------刷新头部操作----------------------------begin------*/
     private void initRefresh() {
+        //只在此方法中仅仅获取一次用户全局配置
+        initSRVConfig();
         //用户没有设置刷新头部时，设置默认的刷新头部，否则使用用户的刷新头
         if (refreshHeader == null) {
             refreshHeader = new SRVRefreshHeader(getContext());
         }
-        refreshHeader.initHeader(refreshHeight, refreshGravity, duration);
+        refreshHeader.initHeader();
         wrapperAdapter.addHeader(refreshHeader);
         refreshHeader.setRefreshListener(new AbsRefreshHeader.ReFreshListener() {
             @Override
@@ -339,6 +300,22 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
                 if (loadListener != null) loadListener.refresh();
             }
         });
+    }
+
+    /**
+     * 获取用户配置的刷新头和加载尾
+     * 配置的优先级为：代码设置 > SRVConfig配置
+     */
+    private void initSRVConfig() {
+        if (module == null) {
+            module = new GetSRVModule(getContext());
+            SRecyclerViewModule config = module.getConfig();
+            //当前有SRV的全局配置，根据配置优先级，重新初始化配置
+            if (config != null) {
+                if (refreshHeader == null) refreshHeader = config.getRefreshHeader(getContext());
+                if (loadingFooter == null) loadingFooter = config.getLoadingFooter(getContext());
+            }
+        }
     }
 
     /**

@@ -125,6 +125,7 @@ public class ClockView extends View {
     }
 
     public void resetClock() {
+        stopClockAnim();
         angle = -90;
     }
 
