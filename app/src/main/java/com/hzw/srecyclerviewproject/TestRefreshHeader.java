@@ -56,8 +56,8 @@ public class TestRefreshHeader extends AbsRefreshHeader {
      */
     @Override
     public int getRefreshGravity() {
-        //return AbsRefreshHeader.HEADER_CENTER;
-        return AbsRefreshHeader.HEADER_BOTTOM;
+        return AbsRefreshHeader.HEADER_CENTER;
+//        return AbsRefreshHeader.HEADER_BOTTOM;
     }
 
     /**
