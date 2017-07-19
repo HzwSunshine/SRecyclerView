@@ -1,5 +1,6 @@
 # SRecyclerView
-有刷新和加载功能的RecyclerView
+有刷新和加载功能的RecyclerView</br>
+博客地址：http://blog.csdn.net/hzwailll/article/details/75285924
 
 主要功能有：
 1. 下拉刷新，滑到底部加载（也支持GridGridLayoutManager）
@@ -12,6 +13,9 @@
 8. 支持Item的点击事件
 9. 附带一个简易的适配器，大大减少适配器的代码
 10. 默认设置为纵向的LinearLayoutManager
+
+![image](https://github.com/HzwSunshine/SRecyclerView/blob/master/srecyclerview.gif)
+
 
 # Download
 use Gradle:
