@@ -107,6 +107,10 @@ public class MainActivity extends AppCompatActivity {
 
         //测试数据
         refreshData();
+
+
+        //混淆
+        //-keep public class * implements com.hzw.srecyclerview.SRecyclerViewModule
     }
 
     private void refreshData() {
