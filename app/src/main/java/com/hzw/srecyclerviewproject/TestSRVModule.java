@@ -17,9 +17,12 @@ public class TestSRVModule implements SRecyclerViewModule {
         return new TestRefreshHeader(context);
     }
 
+    /**
+     * 也可以只配置其中一项，使用默认的加载UI
+     */
     @Override
     public AbsLoadFooter getLoadingFooter(Context context) {
-        return null;
+        return new TestLoadFooter(context);
     }
 
 

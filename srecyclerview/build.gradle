@@ -22,7 +22,7 @@ android {
         userOrg = 'hzwsunshine'    //用户名
         groupId = 'com.github.hzw'   //这个是开源库compile时的前缀，可以随意写
         artifactId = 'srecyclerview'  //仅接着groupId的内容，方便认出你的开源库名称，如果你乐意，可以随意写
-        version = '1.1.0' //开源库版本，以后版本更新，只需修改这个参数即可
+        version = '1.1.1' //开源库版本，以后版本更新，只需修改这个参数即可
         description = 'refresh and loading recyclerview' //开源库的描述，可以随意写
         website = "https://github.com/HzwSunshine/SRecyclerView" //github地址，方便以后查看，可以随意写
     }

@@ -38,7 +38,6 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     private View emptyView;
 
     private boolean isFirstMove = true;
-    //当前是否正在加载数据
     private boolean isLoading = false;
     private boolean isLoadingEnable;
     private boolean isRefreshEnable;
@@ -50,6 +49,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     private float dividerLeft;
     private int dividerColor;
     private int appBarState;
+    private float firstY;
     private float lastY;
 
 
@@ -79,29 +79,28 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         setLayoutManager(manager);
-        isLoadingEnable = true;
-        isRefreshEnable = true;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        if (refreshHeader == null || !isRefreshEnable) return super.onTouchEvent(e);
+        if (refreshHeader == null) return super.onTouchEvent(e);
         if (e.getAction() == MotionEvent.ACTION_MOVE) {
             if (isFirstMove) {
                 isFirstMove = false;
-                lastY = e.getRawY();
+                firstY = e.getRawY();
+                lastY = firstY;
             }
             float y = e.getRawY();
             float delay = y - lastY;
-            isPullUp = delay < 0;
             lastY = y;
-            if (isTop() && appBarState == APP_BAR_EXPAND) {
+            if (isRefreshEnable && isTop() && appBarState == APP_BAR_EXPAND) {
                 refreshHeader.move(delay);
                 setOverScrollMode(View.OVER_SCROLL_NEVER);
                 if (refreshHeader.isMove()) return false;
             }
         } else if (e.getAction() == MotionEvent.ACTION_UP) {
             setOverScrollMode(currentScrollMode);
+            isPullUp = e.getRawY() - firstY < 0;
             isFirstMove = true;
             refreshHeader.up();
         }
@@ -158,6 +157,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         @Override
         public void onItemRangeInserted(int positionStart, int itemCount) {
             wrapperAdapter.notifyItemRangeInserted(positionStart, itemCount);
+            checkEmpty();
         }
 
         @Override
@@ -185,7 +185,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
     private void checkEmpty() {
         if (emptyView != null && wrapperAdapter != null) {
-            if (wrapperAdapter.getItemCount() == 0) {
+            if (wrapperAdapter.isEmpty()) {
                 emptyView.setVisibility(VISIBLE);
                 this.setVisibility(GONE);
             } else {
@@ -235,6 +235,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         if (manager == null || !(manager instanceof LinearLayoutManager) ||
                 ((LinearLayoutManager) manager).getOrientation() != VERTICAL) {
             refreshHeader = null;
+            loadingFooter = null;
             return false;
         }
         return true;
@@ -243,12 +244,13 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     @Override
     public void setLayoutManager(LayoutManager layout) {
         super.setLayoutManager(layout);
-        setDivider(layout);
+        setDivider(dividerColor, dividerHeight, dividerLeft, dividerRight);
     }
 
-    private void setDivider(LayoutManager layout) {
+    public void setDivider(int color, float height, float dividerLeft, float dividerRight) {
+        LayoutManager layout = getLayoutManager();
         boolean isSetDivider = !(layout == null || !(layout instanceof LinearLayoutManager)
-                || dividerColor == NO_COLOR || dividerHeight == 0);
+                || color == NO_COLOR || height == 0);
         boolean isGridManager = layout instanceof GridLayoutManager;
         if (divider != null) removeItemDecoration(divider);
         //只对LinearLayoutManager设置分割线
@@ -256,11 +258,11 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             LinearLayoutManager manager = (LinearLayoutManager) layout;
             if (manager.getOrientation() == LinearLayoutManager.VERTICAL) {
                 divider = new SRVDivider(LinearLayoutManager.VERTICAL);
-                divider.initVerticalDivider(dividerHeight, dividerColor, dividerLeft, dividerRight);
+                divider.initVerticalDivider(height, color, dividerLeft, dividerRight);
                 addItemDecoration(divider);
             } else if (manager.getOrientation() == LinearLayoutManager.HORIZONTAL) {
                 divider = new SRVDivider(LinearLayoutManager.HORIZONTAL);
-                divider.initHorizontalDivider(dividerHeight, dividerColor);
+                divider.initHorizontalDivider(height, color);
                 addItemDecoration(divider);
             }
         }
@@ -289,6 +291,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         //只在此方法中仅仅获取一次用户全局配置
         initSRVConfig();
         //用户没有设置刷新头部时，设置默认的刷新头部，否则使用用户的刷新头
+        isRefreshEnable = true;
         if (refreshHeader == null) {
             refreshHeader = new SRVRefreshHeader(getContext());
         }
@@ -342,6 +345,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         if (refreshHeader != null) {
             isLoading = false;
             refreshHeader.refreshComplete();
+            loadingFooter.reset();
         }
     }
 
@@ -361,18 +365,19 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     /*------------------------------------------尾部操作--------------------------------begin-----*/
     private void initLoading() {
         //用户没有设置刷新头部时，设置默认的刷新头部，否则使用用户的刷新头
+        isLoadingEnable = true;
         if (loadingFooter == null) {
             loadingFooter = new SRVLoadFooter(getContext());
         }
         loadingFooter.initFooter();
         wrapperAdapter.setLoadFooter(loadingFooter);
         //刷新和加载只支持垂直方向的LinearLayoutManager和GridLayoutManager布局
-        //这里manager的类型，在isInitLoad方法中已经做过验证，可以直接强转
-        final LinearLayoutManager manager = (LinearLayoutManager) getLayoutManager();
         addOnScrollListener(new OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 if (newState == SCROLL_STATE_IDLE && isLoadingEnable && isPullUp) {
+                    //这里manager的类型，在isInitLoad方法中已经做过验证，可以直接强转
+                    LinearLayoutManager manager = (LinearLayoutManager) getLayoutManager();
                     judgeLastItem(manager.findLastVisibleItemPosition());
                 }
             }
@@ -380,12 +385,12 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     }
 
     /**
-     * 判断是否开始加载更多，只有滑动到最后一个Item，并且当前有数据时，才会加载
+     * 判断是否开始加载更多，只有滑动到最后一个Item，并且当前有数据时，才会加载更多
      */
-    private void judgeLastItem(int index) {
+    private void judgeLastItem(int last) {
         int itemCount = wrapperAdapter.getItemCount() - 1;
-        int dataCount = getAdapter().getItemCount();
-        if (index == itemCount && dataCount != 0 && !isLoading) {
+        boolean isEmpty = wrapperAdapter.isEmpty();
+        if (last == itemCount && !isEmpty && !isLoading) {
             isLoading = true;
             loadingFooter.loading();
             loadListener.loading();
@@ -555,6 +560,10 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
         private int getDataCount() {
             return adapter.getItemCount();
+        }
+
+        private boolean isEmpty() {
+            return getDataCount() == 0;
         }
 
         class Holder extends ViewHolder {

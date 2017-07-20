@@ -23,12 +23,15 @@ public class MainActivity extends AppCompatActivity {
 
     private List<String> list = new ArrayList<>();
     private SRecyclerView recyclerView;
+    private View emptyView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         recyclerView = (SRecyclerView) findViewById(R.id.srv_test);
+        emptyView = findViewById(R.id.emptyView);
+
 
         //如果设置了加载监听，就是需要刷新加载功能，如果没有设置加载监听，那么就没有下拉与底部加载
         recyclerView.setLoadListener(new SRecyclerView.LoadListener() {
@@ -71,12 +74,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //可以设置一个EmptyView
-        recyclerView.setEmptyView(new View(this));
+        recyclerView.setEmptyView(emptyView);
 
         //可以手动设置一个刷新头部，应该在setAdapter方法之前调用，适用于某个列表需要特殊刷新头的场景
         //SRecyclerView的头部设置有两种种方法：代码设置，全局配置。如果两种方法都没有设置，则适用默认自带的默认刷新头和加载尾
         //recyclerView.setRefreshHeader(new TestRefreshHeader(this));
-        //recyclerView.setLoadingFooter(new xxxx);
+        //recyclerView.setLoadingFooter(new TestLoadFooter(this));
 
 
         //也可以新建一个类，并实现SRecyclerViewModule接口，并在AndroidManifest.xml中添加meta-data，
