@@ -19,7 +19,7 @@
 
 # Download
 use Gradle:
-    [compile 'com.github.hzw:srecyclerview:1.1.0'](https://github.com/HzwSunshine/SRecyclerView)
+    [compile 'com.github.hzw:srecyclerview:1.1.1'](https://github.com/HzwSunshine/SRecyclerView)
   
 
 # ProGuard
