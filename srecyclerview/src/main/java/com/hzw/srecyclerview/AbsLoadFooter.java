@@ -27,6 +27,7 @@ public abstract class AbsLoadFooter extends LinearLayout {
     }
 
     final void initFooter() {
+        removeAllViews();
         setVisibility(GONE);
         LayoutParams params = new LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

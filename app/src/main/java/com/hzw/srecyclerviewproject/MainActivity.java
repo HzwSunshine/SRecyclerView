@@ -1,6 +1,7 @@
 package com.hzw.srecyclerviewproject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = (SRecyclerView) findViewById(R.id.srv_test);
         emptyView = findViewById(R.id.emptyView);
 
+        //startActivity(new Intent(this, TestActivity.class));
 
         //如果设置了加载监听，就是需要刷新加载功能，如果没有设置加载监听，那么就没有下拉与底部加载
         recyclerView.setLoadListener(new SRecyclerView.LoadListener() {
@@ -68,7 +70,8 @@ public class MainActivity extends AppCompatActivity {
             public void click(View v, int position) {
                 Toast.makeText(getApplication(), "位置：  " + position, Toast.LENGTH_SHORT).show();
                 if (position == 0) {
-                    recyclerView.startRefresh(true);
+                    //recyclerView.startRefresh(true);
+                    startActivity(new Intent(MainActivity.this,TestActivity.class));
                 }
             }
         });

@@ -26,6 +26,7 @@ public abstract class AbsRefreshHeader extends LinearLayout {
     protected final static int REFRESH = 1;//正在刷新的状态
     protected final static int PREPARE_NORMAL = 2;//刷新前的状态，未超过刷新临界值
     protected final static int PREPARE_REFRESH = 3;//刷新前的状态，已超过刷新临界值
+    private ValueAnimator resetAnimator;
     private ValueAnimator animator;
     private int refreshHeight;
     private int currentHeight;
@@ -45,6 +46,7 @@ public abstract class AbsRefreshHeader extends LinearLayout {
     }
 
     final void initHeader() {
+        removeAllViews();
         ViewGroup.LayoutParams params = new LinearLayoutCompat.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 0);
         setLayoutParams(params);
@@ -142,6 +144,31 @@ public abstract class AbsRefreshHeader extends LinearLayout {
         animator.start();
     }
 
+    final void release() {
+        if (currentState == REFRESH) return;
+        if (getHeight() >= refreshHeight) {
+            currentState = PREPARE_REFRESH;
+        } else {
+            currentState = PREPARE_NORMAL;
+        }
+        currentHeight = getHeight();
+        heightChangeAnim();
+//        if (resetAnimator == null) {
+//            resetAnimator = ValueAnimator.ofInt(currentHeight, 0);
+//            resetAnimator.setDuration(100);
+//            resetAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//                @Override
+//                public void onAnimationUpdate(ValueAnimator animation) {
+//                    setHeight((int) animation.getAnimatedValue());
+//                }
+//            });
+//        }
+//        if(animator.isRunning()){
+//            animator.cancel();
+//        }
+//        animator.start();
+    }
+
     private void setHeight(int height) {
         height = height < 0 ? 0 : height;
         ViewGroup.LayoutParams params = getLayoutParams();
@@ -195,7 +222,8 @@ public abstract class AbsRefreshHeader extends LinearLayout {
 
     final void startRefresh(final boolean isAnim) {
         if (loadListener != null && currentState != REFRESH) {
-            post(new Runnable() {
+            int delay = getWidth() == 0 ? 500 : 0;
+            postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     currentState = NORMAL;
@@ -205,9 +233,8 @@ public abstract class AbsRefreshHeader extends LinearLayout {
                         heightChangeAnimEnd();
                     }
                 }
-            });
+            }, delay);
         }
-
     }
 
     interface ReFreshListener {

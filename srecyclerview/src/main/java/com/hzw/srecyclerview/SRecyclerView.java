@@ -39,8 +39,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
     private boolean isFirstMove = true;
     private boolean isLoading = false;
-    private boolean isLoadingEnable;
-    private boolean isRefreshEnable;
+    private boolean isLoadingEnable = true;
+    private boolean isRefreshEnable = true;
     private boolean isPullUp;
 
     private int currentScrollMode;
@@ -103,6 +103,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             isPullUp = e.getRawY() - firstY < 0;
             isFirstMove = true;
             refreshHeader.up();
+        } else {
+            refreshHeader.release();
         }
         return super.onTouchEvent(e);
     }
@@ -291,12 +293,13 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         //只在此方法中仅仅获取一次用户全局配置
         initSRVConfig();
         //用户没有设置刷新头部时，设置默认的刷新头部，否则使用用户的刷新头
-        isRefreshEnable = true;
         if (refreshHeader == null) {
             refreshHeader = new SRVRefreshHeader(getContext());
         }
         refreshHeader.initHeader();
-        wrapperAdapter.addHeader(refreshHeader);
+        if (wrapperAdapter != null && isRefreshEnable) {
+            wrapperAdapter.setRefreshHeader(refreshHeader);
+        }
         refreshHeader.setRefreshListener(new AbsRefreshHeader.ReFreshListener() {
             @Override
             public void refresh() {
@@ -323,10 +326,10 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
     /**
      * 设置自己的刷新头部
-     * 应在setAdapter之前调用才有效
      */
     public void setRefreshHeader(AbsRefreshHeader view) {
         refreshHeader = view;
+        initRefresh();
     }
 
     public void addHeader(View view) {
@@ -358,6 +361,15 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
     public void setRefreshEnable(boolean enable) {
         isRefreshEnable = enable;
+        if (refreshHeader != null) {
+            if (enable && wrapperAdapter != null) {
+                wrapperAdapter.setRefreshHeader(refreshHeader);
+            } else if (wrapperAdapter != null) {
+                isLoading = false;
+                refreshHeader.refreshComplete();
+                wrapperAdapter.removeHeader(refreshHeader);
+            }
+        }
     }
     /*------------------------------------------刷新头部操作----------------------------end--------*/
 
@@ -365,12 +377,12 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     /*------------------------------------------尾部操作--------------------------------begin-----*/
     private void initLoading() {
         //用户没有设置刷新头部时，设置默认的刷新头部，否则使用用户的刷新头
-        isLoadingEnable = true;
         if (loadingFooter == null) {
             loadingFooter = new SRVLoadFooter(getContext());
         }
         loadingFooter.initFooter();
-        wrapperAdapter.setLoadFooter(loadingFooter);
+        //加载更多可用时，添加加载尾部
+        if (isLoadingEnable) wrapperAdapter.setLoadFooter(loadingFooter);
         //刷新和加载只支持垂直方向的LinearLayoutManager和GridLayoutManager布局
         addOnScrollListener(new OnScrollListener() {
             @Override
@@ -399,10 +411,14 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
     /**
      * 设置自己的加载尾部
-     * 应在setAdapter之前调用才有效
      */
     public void setLoadingFooter(AbsLoadFooter view) {
+        if (view == null) return;
         loadingFooter = view;
+        loadingFooter.initFooter();
+        if (wrapperAdapter != null && isLoadingEnable) {
+            wrapperAdapter.setLoadFooter(loadingFooter);
+        }
     }
 
     public void addFooter(View view) {
@@ -426,6 +442,14 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
     public void setLoadingEnable(boolean enable) {
         isLoadingEnable = enable;
+        if (loadingFooter != null) {
+            if (enable && wrapperAdapter != null) {
+                wrapperAdapter.setLoadFooter(loadingFooter);
+            } else if (wrapperAdapter != null) {
+                loadingComplete();
+                wrapperAdapter.removeFooter(loadingFooter);
+            }
+        }
     }
 
     public void loadNoMoreData() {
@@ -442,6 +466,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         private SparseArray<View> footers = new SparseArray<>();
         private int HEADER_TYPE = 1314521;
         private int FOOTER_TYPE = HEADER_TYPE * 10;
+        private final int REFRESH_HEADER = 1314520;
         private final int LOAD_FOOTER = HEADER_TYPE + FOOTER_TYPE;
         private ClickListener listener;
         private Adapter adapter;
@@ -464,6 +489,12 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             checkAddView(view);
             headers.put(HEADER_TYPE++, view);
             notifyItemInserted(getHeaderCount() - 1);
+        }
+
+        void setRefreshHeader(View view) {
+            boolean isNotify = headers.get(REFRESH_HEADER) == null;
+            headers.put(REFRESH_HEADER, view);
+            if (isNotify) notifyItemInserted(0);
         }
 
         void removeHeader(View view) {
