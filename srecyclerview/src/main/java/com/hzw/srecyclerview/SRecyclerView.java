@@ -186,10 +186,10 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
     private void checkEmpty() {
         if (emptyView != null && wrapperAdapter != null) {
-            if (wrapperAdapter.isEmpty()) {
+            if (wrapperAdapter.isEmpty() && emptyView.getVisibility() == GONE) {
                 emptyView.setVisibility(VISIBLE);
                 this.setVisibility(GONE);
-            } else {
+            } else if (emptyView.getVisibility() == VISIBLE) {
                 emptyView.setVisibility(GONE);
                 this.setVisibility(VISIBLE);
             }
@@ -356,7 +356,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
     public void startRefresh(boolean isAnim) {
         if (refreshHeader != null && isRefreshEnable && getAdapter() != null) {
-            if (emptyView != null) {
+            if (emptyView != null && emptyView.getVisibility() == VISIBLE) {
                 this.setVisibility(VISIBLE);
                 emptyView.setVisibility(GONE);
             }
