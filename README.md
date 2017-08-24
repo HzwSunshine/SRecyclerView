@@ -1,4 +1,4 @@
-# SRecyclerView
+﻿# SRecyclerView
 有刷新和加载功能的RecyclerView</br>
 博客地址：http://blog.csdn.net/hzwailll/article/details/75285924
 
@@ -19,7 +19,7 @@
 
 # Download
 use Gradle:
-    [compile 'com.github.hzw:srecyclerview:1.1.1'](https://github.com/HzwSunshine/SRecyclerView)
+    [compile 'com.github.hzw:srecyclerview:1.1.2'](https://github.com/HzwSunshine/SRecyclerView)
   
 
 # ProGuard
