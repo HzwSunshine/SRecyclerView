@@ -22,10 +22,6 @@
         <!--android:name="com.hzw.srecyclerviewproject.TestSRVModule"-->
         <!--android:value="SRecyclerViewModule" />-->
 
-        <activity
-            android:name=".TestActivity"
-            android:screenOrientation="portrait" />
-
     </application>
 
 </manifest>

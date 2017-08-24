@@ -26,8 +26,8 @@ public abstract class AbsRefreshHeader extends LinearLayout {
     protected final static int REFRESH = 1;//正在刷新的状态
     protected final static int PREPARE_NORMAL = 2;//刷新前的状态，未超过刷新临界值
     protected final static int PREPARE_REFRESH = 3;//刷新前的状态，已超过刷新临界值
-    private ValueAnimator resetAnimator;
     private ValueAnimator animator;
+    private boolean isRefreshing;
     private int refreshHeight;
     private int currentHeight;
     private int currentState;
@@ -71,13 +71,13 @@ public abstract class AbsRefreshHeader extends LinearLayout {
         currentHeight += delay;
         setHeight(currentHeight);
         //拖动时的状态
-        if (currentHeight == 0) {
+        if (getHeight() == 0) {
             currentState = NORMAL;
             refresh(NORMAL, currentHeight);
-        } else if (currentHeight < refreshHeight) {
+        } else if (getHeight() < refreshHeight) {
             currentState = PREPARE_NORMAL;
             refresh(PREPARE_NORMAL, currentHeight);
-        } else if (currentHeight >= refreshHeight) {
+        } else if (getHeight() >= refreshHeight) {
             currentState = PREPARE_REFRESH;
             refresh(PREPARE_REFRESH, currentHeight);
         }
@@ -88,9 +88,10 @@ public abstract class AbsRefreshHeader extends LinearLayout {
      */
     final void up() {
         //手指抬起时，如果当前处于刷新状态或者刷新头部高度为0，则
-        if (currentState == REFRESH || currentState == NORMAL) return;
+        if (isRefreshing || currentState == NORMAL) return;
         //处于将要刷新状态时，松开手指即可刷新，同时改变到刷新高度
         if (currentState == PREPARE_REFRESH && loadListener != null) {
+            isRefreshing = true;
             refresh(REFRESH, refreshHeight);
             loadListener.refresh();
         }
@@ -144,31 +145,6 @@ public abstract class AbsRefreshHeader extends LinearLayout {
         animator.start();
     }
 
-    final void release() {
-        if (currentState == REFRESH) return;
-        if (getHeight() >= refreshHeight) {
-            currentState = PREPARE_REFRESH;
-        } else {
-            currentState = PREPARE_NORMAL;
-        }
-        currentHeight = getHeight();
-        heightChangeAnim();
-//        if (resetAnimator == null) {
-//            resetAnimator = ValueAnimator.ofInt(currentHeight, 0);
-//            resetAnimator.setDuration(100);
-//            resetAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//                @Override
-//                public void onAnimationUpdate(ValueAnimator animation) {
-//                    setHeight((int) animation.getAnimatedValue());
-//                }
-//            });
-//        }
-//        if(animator.isRunning()){
-//            animator.cancel();
-//        }
-//        animator.start();
-    }
-
     private void setHeight(int height) {
         height = height < 0 ? 0 : height;
         ViewGroup.LayoutParams params = getLayoutParams();
@@ -189,6 +165,7 @@ public abstract class AbsRefreshHeader extends LinearLayout {
             case REFRESH://刷新结束
                 currentState = NORMAL;
                 currentHeight = 0;
+                isRefreshing = false;
                 refresh(NORMAL, 0);
                 break;
             case PREPARE_NORMAL://在低于刷新高度的位置松开拖动，当前已回归初始状态
@@ -212,8 +189,8 @@ public abstract class AbsRefreshHeader extends LinearLayout {
      * 请求数据，刷新完成，恢复初始状态
      */
     final void refreshComplete() {
+        if (currentState == NORMAL) return;
         if (animator != null && animator.isRunning()) {
-            //在刷新和刷新完成之间调用过快
             animator.cancel();
         }
         currentState = REFRESH;
@@ -221,29 +198,29 @@ public abstract class AbsRefreshHeader extends LinearLayout {
     }
 
     final void startRefresh(final boolean isAnim) {
-        if (loadListener != null && currentState != REFRESH) {
-            int delay = getWidth() == 0 ? 500 : 0;
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    currentState = NORMAL;
-                    if (isAnim) {
-                        heightChangeAnim();
-                    } else {
-                        heightChangeAnimEnd();
-                    }
+        if (loadListener == null || currentState == REFRESH) return;
+        int delay = getWidth() == 0 ? 500 : 0;
+        isRefreshing = true;
+        postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                currentState = NORMAL;
+                if (isAnim) {
+                    heightChangeAnim();
+                } else {
+                    heightChangeAnimEnd();
                 }
-            }, delay);
-        }
+            }
+        }, delay);
     }
 
-    interface ReFreshListener {
+    interface RefreshListener {
         void refresh();
     }
 
-    private ReFreshListener loadListener;
+    private RefreshListener loadListener;
 
-    final void setRefreshListener(ReFreshListener listener) {
+    final void setRefreshListener(RefreshListener listener) {
         loadListener = listener;
     }
 
@@ -262,7 +239,7 @@ public abstract class AbsRefreshHeader extends LinearLayout {
     }
 
     public int getRefreshDuration() {
-        return 200;
+        return 300;
     }
     /*----------------------------------------获取刷新配置--------------------------------*/
 

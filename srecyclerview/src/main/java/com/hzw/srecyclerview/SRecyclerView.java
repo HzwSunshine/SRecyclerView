@@ -25,10 +25,7 @@ import android.view.ViewParent;
  */
 public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffsetChangedListener {
 
-    private static final int APP_BAR_EXPAND = 0;
-    private static final int APP_BAR_CLOSE = 1;
     private static final int NO_COLOR = -1;
-
     private AbsRefreshHeader refreshHeader;
     private WrapperAdapter wrapperAdapter;
     private AbsLoadFooter loadingFooter;
@@ -37,10 +34,11 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     private SRVDivider divider;
     private View emptyView;
 
-    private boolean isFirstMove = true;
-    private boolean isLoading = false;
     private boolean isLoadingEnable = true;
     private boolean isRefreshEnable = true;
+    private boolean isAppBarExpand = true;
+    private boolean isFirstMove = true;
+    private boolean isLoading = false;
     private boolean isPullUp;
 
     private int currentScrollMode;
@@ -48,7 +46,6 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     private float dividerRight;
     private float dividerLeft;
     private int dividerColor;
-    private int appBarState;
     private float firstY;
     private float lastY;
 
@@ -84,27 +81,30 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         if (refreshHeader == null) return super.onTouchEvent(e);
-        if (e.getAction() == MotionEvent.ACTION_MOVE) {
-            if (isFirstMove) {
-                isFirstMove = false;
-                firstY = e.getRawY();
-                lastY = firstY;
-            }
-            float y = e.getRawY();
-            float delay = y - lastY;
-            lastY = y;
-            if (isRefreshEnable && isTop() && appBarState == APP_BAR_EXPAND) {
-                refreshHeader.move(delay);
-                setOverScrollMode(View.OVER_SCROLL_NEVER);
-                if (refreshHeader.isMove()) return false;
-            }
-        } else if (e.getAction() == MotionEvent.ACTION_UP) {
-            setOverScrollMode(currentScrollMode);
-            isPullUp = e.getRawY() - firstY < 0;
-            isFirstMove = true;
-            refreshHeader.up();
-        } else {
-            refreshHeader.release();
+        switch (e.getAction()) {
+            case MotionEvent.ACTION_MOVE:
+                if (isFirstMove) {
+                    isFirstMove = false;
+                    firstY = e.getRawY();
+                    lastY = firstY;
+                }
+                float y = e.getRawY();
+                float delay = y - lastY;
+                lastY = y;
+                if (isRefreshEnable && isTop() && isAppBarExpand) {
+                    refreshHeader.move(delay);
+                    setOverScrollMode(View.OVER_SCROLL_NEVER);
+                    if (refreshHeader.isMove()) return false;
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                isFirstMove = true;
+                isPullUp = e.getRawY() - firstY < 0;
+                setOverScrollMode(currentScrollMode);
+            default:
+                if (isRefreshEnable && isTop() && isAppBarExpand) {
+                    refreshHeader.up();
+                }
         }
         return super.onTouchEvent(e);
     }
@@ -116,7 +116,6 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        //解决嵌套CoordinatorLayout时的滑动冲突
         ViewParent parent = getParent();
         while (parent != null) {
             if (parent instanceof CoordinatorLayout) break;
@@ -146,7 +145,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-        appBarState = verticalOffset == 0 ? APP_BAR_EXPAND : APP_BAR_CLOSE;
+        isAppBarExpand = verticalOffset == 0;
     }
 
     private AdapterDataObserver mObserver = new AdapterDataObserver() {
@@ -251,12 +250,16 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
     public void setDivider(int color, float height, float dividerLeft, float dividerRight) {
         LayoutManager layout = getLayoutManager();
-        boolean isSetDivider = !(layout == null || !(layout instanceof LinearLayoutManager)
-                || color == NO_COLOR || height == 0);
+        boolean isSetDivider = color != NO_COLOR && height != 0 &&
+                layout != null && layout instanceof LinearLayoutManager;
         boolean isGridManager = layout instanceof GridLayoutManager;
         if (divider != null) removeItemDecoration(divider);
         //只对LinearLayoutManager设置分割线
         if (isSetDivider && !isGridManager) {
+            this.dividerColor = color;
+            this.dividerHeight = height;
+            this.dividerLeft = dividerLeft;
+            this.dividerRight = dividerRight;
             LinearLayoutManager manager = (LinearLayoutManager) layout;
             if (manager.getOrientation() == LinearLayoutManager.VERTICAL) {
                 divider = new SRVDivider(LinearLayoutManager.VERTICAL);
@@ -292,15 +295,13 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     private void initRefresh() {
         //只在此方法中仅仅获取一次用户全局配置
         initSRVConfig();
-        //用户没有设置刷新头部时，设置默认的刷新头部，否则使用用户的刷新头
+        //没有设置刷新头部时，设置默认的刷新头部，否则使用设置的刷新头
         if (refreshHeader == null) {
             refreshHeader = new SRVRefreshHeader(getContext());
         }
         refreshHeader.initHeader();
-        if (wrapperAdapter != null && isRefreshEnable) {
-            wrapperAdapter.setRefreshHeader(refreshHeader);
-        }
-        refreshHeader.setRefreshListener(new AbsRefreshHeader.ReFreshListener() {
+        wrapperAdapter.addHeader(refreshHeader);
+        refreshHeader.setRefreshListener(new AbsRefreshHeader.RefreshListener() {
             @Override
             public void refresh() {
                 if (loadListener != null) loadListener.refresh();
@@ -325,11 +326,12 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     }
 
     /**
-     * 设置自己的刷新头部
+     * 设置单独的刷新头部
+     * 应在setAdapter之前调用才有效
      */
     public void setRefreshHeader(AbsRefreshHeader view) {
+        if (view == null || getAdapter() != null) return;
         refreshHeader = view;
-        initRefresh();
     }
 
     public void addHeader(View view) {
@@ -353,7 +355,11 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     }
 
     public void startRefresh(boolean isAnim) {
-        if (refreshHeader != null && isRefreshEnable) {
+        if (refreshHeader != null && isRefreshEnable && getAdapter() != null) {
+            if (emptyView != null) {
+                this.setVisibility(VISIBLE);
+                emptyView.setVisibility(GONE);
+            }
             scrollToPosition(0);
             refreshHeader.startRefresh(isAnim);
         }
@@ -361,14 +367,9 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
     public void setRefreshEnable(boolean enable) {
         isRefreshEnable = enable;
-        if (refreshHeader != null) {
-            if (enable && wrapperAdapter != null) {
-                wrapperAdapter.setRefreshHeader(refreshHeader);
-            } else if (wrapperAdapter != null) {
-                isLoading = false;
-                refreshHeader.refreshComplete();
-                wrapperAdapter.removeHeader(refreshHeader);
-            }
+        if (!enable && refreshHeader != null && getAdapter() != null && loadListener != null) {
+            isLoading = false;
+            refreshHeader.refreshComplete();
         }
     }
     /*------------------------------------------刷新头部操作----------------------------end--------*/
@@ -381,8 +382,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             loadingFooter = new SRVLoadFooter(getContext());
         }
         loadingFooter.initFooter();
-        //加载更多可用时，添加加载尾部
-        if (isLoadingEnable) wrapperAdapter.setLoadFooter(loadingFooter);
+        wrapperAdapter.setLoadFooter(loadingFooter);
+        if (!isLoadingEnable) loadingFooter.loadingOver();
         //刷新和加载只支持垂直方向的LinearLayoutManager和GridLayoutManager布局
         addOnScrollListener(new OnScrollListener() {
             @Override
@@ -413,12 +414,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
      * 设置自己的加载尾部
      */
     public void setLoadingFooter(AbsLoadFooter view) {
-        if (view == null) return;
+        if (view == null || getAdapter() != null) return;
         loadingFooter = view;
-        loadingFooter.initFooter();
-        if (wrapperAdapter != null && isLoadingEnable) {
-            wrapperAdapter.setLoadFooter(loadingFooter);
-        }
     }
 
     public void addFooter(View view) {
@@ -442,13 +439,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
     public void setLoadingEnable(boolean enable) {
         isLoadingEnable = enable;
-        if (loadingFooter != null) {
-            if (enable && wrapperAdapter != null) {
-                wrapperAdapter.setLoadFooter(loadingFooter);
-            } else if (wrapperAdapter != null) {
-                loadingComplete();
-                wrapperAdapter.removeFooter(loadingFooter);
-            }
+        if (!enable && getAdapter() != null && loadListener != null) {
+            loadingComplete();
         }
     }
 
@@ -466,7 +458,6 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         private SparseArray<View> footers = new SparseArray<>();
         private int HEADER_TYPE = 1314521;
         private int FOOTER_TYPE = HEADER_TYPE * 10;
-        private final int REFRESH_HEADER = 1314520;
         private final int LOAD_FOOTER = HEADER_TYPE + FOOTER_TYPE;
         private ClickListener listener;
         private Adapter adapter;
@@ -489,12 +480,6 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             checkAddView(view);
             headers.put(HEADER_TYPE++, view);
             notifyItemInserted(getHeaderCount() - 1);
-        }
-
-        void setRefreshHeader(View view) {
-            boolean isNotify = headers.get(REFRESH_HEADER) == null;
-            headers.put(REFRESH_HEADER, view);
-            if (isNotify) notifyItemInserted(0);
         }
 
         void removeHeader(View view) {

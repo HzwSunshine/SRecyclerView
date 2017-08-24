@@ -10,7 +10,7 @@
         android:layout_width="26dp"
         android:layout_height="wrap_content"
         android:rotation="180"
-        android:src="@drawable/srv_arrow1" />
+        android:src="@drawable/srv_arrow" />
 
     <ProgressBar
         android:id="@+id/pb_srv_refreshProgress"

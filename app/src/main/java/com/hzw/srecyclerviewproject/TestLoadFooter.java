@@ -62,6 +62,9 @@ public class TestLoadFooter extends AbsLoadFooter {
         setLayoutParams(params);
     }
 
+    /**
+     * 刷新结束后如果需要重置加载尾部，可重写此方法重置LoadFooter
+     */
     @Override
     public void reset() {
         ViewGroup.LayoutParams params = getLayoutParams();
