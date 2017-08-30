@@ -66,7 +66,7 @@ public abstract class AbsRefreshHeader extends LinearLayout {
      * 手指拖动时
      */
     final void move(float delay) {
-        if (currentState == REFRESH) return;
+        if (currentState == REFRESH || isRefreshing) return;
         delay = delay / 3;
         currentHeight += delay;
         setHeight(currentHeight);
@@ -198,9 +198,9 @@ public abstract class AbsRefreshHeader extends LinearLayout {
     }
 
     final void startRefresh(final boolean isAnim) {
-        if (loadListener == null || currentState == REFRESH) return;
-        int delay = getWidth() == 0 ? 500 : 0;
+        if (loadListener == null || currentState == REFRESH || isRefreshing) return;
         isRefreshing = true;
+        int delay = getWidth() == 0 ? 500 : 0;
         postDelayed(new Runnable() {
             @Override
             public void run() {
