@@ -15,14 +15,13 @@ import java.util.List;
 class GetSRVModule {
 
     private static final String SRV_CONFIG_VALUE = "SRecyclerViewModule";
-    private static SRecyclerViewModule config;
+    private SRecyclerViewModule config;
 
-    GetSRVModule(Context context) {
-        List<SRecyclerViewModule> configs = parse(context);
-        config = configs.size() > 0 ? configs.get(0) : null;
-    }
-
-    SRecyclerViewModule getConfig() {
+    SRecyclerViewModule getConfig(Context context) {
+        if (config == null) {
+            List<SRecyclerViewModule> configs = parse(context);
+            config = configs.size() > 0 ? configs.get(0) : null;
+        }
         return config;
     }
 

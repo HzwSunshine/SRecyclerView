@@ -315,8 +315,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
      */
     private void initSRVConfig() {
         if (module == null) {
-            module = new GetSRVModule(getContext());
-            SRecyclerViewModule config = module.getConfig();
+            module = new GetSRVModule();
+            SRecyclerViewModule config = module.getConfig(getContext());
             //当前有SRV的全局配置，根据配置优先级，重新初始化配置
             if (config != null) {
                 if (refreshHeader == null) refreshHeader = config.getRefreshHeader(getContext());
