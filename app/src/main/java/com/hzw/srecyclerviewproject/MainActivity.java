@@ -89,18 +89,17 @@ public class MainActivity extends AppCompatActivity {
         //          android:value="SRecyclerViewModule" />
 
 
+        //测试添加尾部
+        View footer = LayoutInflater.from(this).inflate(R.layout.footer_test, recyclerView, false);
+        recyclerView.addFooter(footer);
+
         //这里的适配器使用的一个简易的SRV适配器，同样也可以用于普通的RecyclerView，当然这里也可以用原生的适配器
         recyclerView.setAdapter(new SRVAdapter(list));
         //recyclerView.setAdapter(new InitAdapter(list, this));
 
-
-        //测试添加头部，添加头部的方法应该在setAdapter方法之后调用
+        //测试添加头部
         View header = LayoutInflater.from(this).inflate(R.layout.header_test, recyclerView, false);
         recyclerView.addHeader(header);
-
-        //测试添加尾部，添加头部的方法应该在setAdapter方法之后调用
-        View footer = LayoutInflater.from(this).inflate(R.layout.footer_test, recyclerView, false);
-        recyclerView.addFooter(footer);
 
 
         //SRV的代码刷新，应该在setAdapter方法之后调用，true表示会有刷新动画，false无任何动画
@@ -118,7 +117,11 @@ public class MainActivity extends AppCompatActivity {
     private void refreshData() {
         list.clear();
         for (int i = 0; i < 15; i++) {
-            list.add("数据  " + i);
+            if (i == 0) {
+                list.add("自动刷新");
+            } else {
+                list.add("数据  " + i);
+            }
         }
         recyclerView.getAdapter().notifyDataSetChanged();
     }

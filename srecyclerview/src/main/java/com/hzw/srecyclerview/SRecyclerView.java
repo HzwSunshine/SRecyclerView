@@ -5,7 +5,6 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -34,6 +33,11 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     private SRVDivider divider;
     private View emptyView;
 
+    private SparseArray<View> headers = new SparseArray<>();
+    private SparseArray<View> footers = new SparseArray<>();
+    private int HEADER_TYPE = 1314521;
+    private int FOOTER_TYPE = HEADER_TYPE * 10;
+
     private boolean isLoadingEnable = true;
     private boolean isRefreshEnable = true;
     private boolean isAppBarExpand = true;
@@ -55,12 +59,12 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         init(null, 0);
     }
 
-    public SRecyclerView(Context context, @Nullable AttributeSet attrs) {
+    public SRecyclerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(attrs, 0);
     }
 
-    public SRecyclerView(Context context, @Nullable AttributeSet attrs, int defStyle) {
+    public SRecyclerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(attrs, defStyle);
     }
@@ -300,7 +304,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             refreshHeader = new SRVRefreshHeader(getContext());
         }
         refreshHeader.initHeader();
-        wrapperAdapter.addHeader(refreshHeader);
+        wrapperAdapter.setRefreshHeader(refreshHeader);
         refreshHeader.setRefreshListener(new AbsRefreshHeader.RefreshListener() {
             @Override
             public void refresh() {
@@ -335,8 +339,11 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     }
 
     public void addHeader(View view) {
+        if (view == null) return;
+        checkAddView(view);
+        headers.put(HEADER_TYPE++, view);
         if (wrapperAdapter != null) {
-            wrapperAdapter.addHeader(view);
+            wrapperAdapter.notifyAddHeader();
         }
     }
 
@@ -419,8 +426,11 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     }
 
     public void addFooter(View view) {
+        if (view == null) return;
+        checkAddView(view);
+        footers.put(FOOTER_TYPE++, view);
         if (wrapperAdapter != null) {
-            wrapperAdapter.addFooter(view);
+            wrapperAdapter.notifyAddFooter();
         }
     }
 
@@ -453,11 +463,15 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     /*------------------------------------------尾部操作-------------------------------end------*/
 
 
+    private void checkAddView(View view) {
+        if (view.getParent() != null) {
+            throw new IllegalStateException("The specified child already has a parent. " +
+                    "You must call removeView() on the child's parent first.");
+        }
+    }
+
     private class WrapperAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        private SparseArray<View> headers = new SparseArray<>();
-        private SparseArray<View> footers = new SparseArray<>();
-        private int HEADER_TYPE = 1314521;
-        private int FOOTER_TYPE = HEADER_TYPE * 10;
+        private final int REFRESH_HEADER = 1314520;
         private final int LOAD_FOOTER = HEADER_TYPE + FOOTER_TYPE;
         private ClickListener listener;
         private Adapter adapter;
@@ -475,11 +489,13 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             return position < getHeaderCount();
         }
 
-        void addHeader(View view) {
-            if (view == null) return;
-            checkAddView(view);
-            headers.put(HEADER_TYPE++, view);
+        void notifyAddHeader() {
             notifyItemInserted(getHeaderCount() - 1);
+        }
+
+        void setRefreshHeader(View view) {
+            headers.put(REFRESH_HEADER, view);
+            notifyDataSetChanged();
         }
 
         void removeHeader(View view) {
@@ -497,10 +513,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             return position >= (getDataCount() + getHeaderCount());
         }
 
-        void addFooter(View view) {
-            if (view == null) return;
-            checkAddView(view);
-            footers.put(FOOTER_TYPE++, view);
+        void notifyAddFooter() {
             int insertPosition = getHeaderCount() + getDataCount() + getFooterCount();
             //如果有加载尾部，则在尾部之前插入Item，保证加载尾部是最后一个Item
             if (footers.get(LOAD_FOOTER) != null) insertPosition -= 1;
@@ -524,12 +537,6 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             }
         }
 
-        private void checkAddView(View view) {
-            if (view.getParent() != null) {
-                throw new IllegalStateException("The specified child already has a parent. " +
-                        "You must call removeView() on the child's parent first.");
-            }
-        }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
