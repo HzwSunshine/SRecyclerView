@@ -18,18 +18,18 @@
 
 
 # Download
-use Gradle:&nbsp;&nbsp;&nbsp;&nbsp;<font color=#037DE1 size=4>
+use Gradle:&nbsp;&nbsp;&nbsp;&nbsp;
     [compile 'com.github.hzw:srecyclerview:1.1.4'](https://github.com/HzwSunshine/SRecyclerView)
-  </font>
+  
 
 # ProGuard
--keep public class * implements com.hzw.srecyclerview.SRecyclerViewModule
-
+<font color=#037DE1>-keep public class * implements com.hzw.srecyclerview.SRecyclerViewModule
+</font>
 
 # Update History
 
-> * 2017.9.6     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.4 </br>
-<font color=#666666>修改添加头部和尾部的逻辑，可以在setAdapter之前或之后添加了
+> * <font color=#333333>2017.9.6     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.4</font> </br>
+修改添加头部和尾部的逻辑，可以在setAdapter之前或之后添加了
 
 > * 2017.8.30    &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.3 </br>
 完善自动刷新时，手势操作可能引起的刷新异常
