@@ -18,9 +18,9 @@
 
 
 # Download
-use Gradle:
+use Gradle:&nbsp;&nbsp;&nbsp;&nbsp;<font color=#037DE1 size=4>
     [compile 'com.github.hzw:srecyclerview:1.1.4'](https://github.com/HzwSunshine/SRecyclerView)
-  
+  </font>
 
 # ProGuard
 -keep public class * implements com.hzw.srecyclerview.SRecyclerViewModule
