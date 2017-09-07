@@ -26,7 +26,7 @@ use Gradle:
 -keep public class * implements com.hzw.srecyclerview.SRecyclerViewModule
 
 
-# Update
+# Update History
 
 > * 2017.9.6     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.4 </br>
 <font color=#666666>修改添加头部和尾部的逻辑，可以在setAdapter之前或之后添加了
