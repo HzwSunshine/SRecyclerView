@@ -23,7 +23,28 @@ use Gradle:
   
 
 # ProGuard
--keep public class * implements com.hzw.srecyclerview.SRecyclerViewModule
+-keep public <font color=#0099ff> class * implements com.hzw.srecyclerview.SRecyclerViewModule
+
+
+#Update
+
+> * 2017.9.6     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.4 </br>
+<font color=#666666>修改添加头部和尾部的逻辑，可以在setAdapter之前或之后添加了
+
+> * 2017.8.30    &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.3 </br>
+完善自动刷新时，手势操作可能引起的刷新异常
+
+> * 2017.8.24    &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.2 </br>
+解决多手势下拉时的刷新问题，完善刷新加载逻辑，完善代码
+
+> * 2017.7.20    &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.1 </br>
+完善下拉手势和加载更多的逻辑，完善测试类及注释
+
+> * 2017.7.19    &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.0 </br>
+完善刷新逻辑，版本更新为1.1.0
+
+> * 2017.7.18    &nbsp;&nbsp;&nbsp;&nbsp;版本：1.0.0 </br>
+完成SRecyclerView，测试并使用了一段时间。2017.7.18首次提交SRecyclerView到GitHub，同时提交到JCenter
 
 
 
