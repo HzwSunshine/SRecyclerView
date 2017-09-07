@@ -23,12 +23,12 @@ use Gradle:&nbsp;&nbsp;&nbsp;&nbsp;
   
 
 # ProGuard
-<font color=#037DE1>-keep public class * implements com.hzw.srecyclerview.SRecyclerViewModule
-</font>
+-keep public class * implements com.hzw.srecyclerview.SRecyclerViewModule
+
 
 # Update History
 
-> * <font color=#333333>2017.9.6     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.4</font> </br>
+> * 2017.9.6     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.4 </br>
 修改添加头部和尾部的逻辑，可以在setAdapter之前或之后添加了
 
 > * 2017.8.30    &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.3 </br>
