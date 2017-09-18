@@ -28,7 +28,6 @@ public abstract class AbsLoadFooter extends LinearLayout {
 
     final void initFooter() {
         removeAllViews();
-        setVisibility(GONE);
         LayoutParams params = new LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         setLayoutParams(params);
@@ -40,19 +39,6 @@ public abstract class AbsLoadFooter extends LinearLayout {
      * 刷新结束后如果有需要，可重写此方法重置LoadFooter
      */
     public void reset() {
-    }
-
-    final void loading() {
-        setVisibility(VISIBLE);
-        loadBegin();
-    }
-
-    /**
-     * 加载结束
-     */
-    final void loadingOver() {
-        setVisibility(GONE);
-        loadEnd();
     }
 
     /**

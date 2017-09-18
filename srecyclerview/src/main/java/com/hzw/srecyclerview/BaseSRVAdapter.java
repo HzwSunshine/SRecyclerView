@@ -42,7 +42,7 @@ public abstract class BaseSRVAdapter<T> extends RecyclerView.Adapter<SRVHolder> 
 
     @Override
     public int getItemViewType(int position) {
-        return getItemType(position);
+        return getItemType(mList.get(position), position);
     }
 
     /**
@@ -50,7 +50,7 @@ public abstract class BaseSRVAdapter<T> extends RecyclerView.Adapter<SRVHolder> 
      *
      * @return 返回Item类型是正常类型还是分组类型
      */
-    public int getItemType(int position) {
+    public int getItemType(T data, int position) {
         return TYPE_NORMAL;
     }
 
@@ -86,13 +86,13 @@ public abstract class BaseSRVAdapter<T> extends RecyclerView.Adapter<SRVHolder> 
         if (getItemViewType(position) == TYPE_NORMAL) {
             onBindView(holder, mList.get(position), position);
         } else if (getItemViewType(position) == TYPE_SECTION) {
-            onBindSectionView(holder, position);
+            onBindSectionView(holder, mList.get(position), position);
         }
     }
 
     public abstract void onBindView(SRVHolder holder, T data, int i);
 
-    public void onBindSectionView(SRVHolder holder, int position) {
+    public void onBindSectionView(SRVHolder holder, T data, int position) {
     }
 
     @Override

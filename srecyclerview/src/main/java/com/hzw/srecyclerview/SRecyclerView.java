@@ -28,8 +28,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     private AbsRefreshHeader refreshHeader;
     private WrapperAdapter wrapperAdapter;
     private AbsLoadFooter loadingFooter;
+    private SRecyclerViewModule config;
     private LoadListener loadListener;
-    private GetSRVModule module;
     private SRVDivider divider;
     private View emptyView;
 
@@ -217,7 +217,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         adapter.registerAdapterDataObserver(mObserver);
         mObserver.onChanged();
         //设置了加载功能时，初始化刷新头和加载尾部
-        if (loadListener != null && isInitLoad()) {
+        if (config == null && loadListener != null && isInitLoad()) {
             initRefresh();
             initLoading();
         }
@@ -318,14 +318,10 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
      * 配置的优先级为：代码设置 > SRVConfig配置
      */
     private void initSRVConfig() {
-        if (module == null) {
-            module = new GetSRVModule();
-            SRecyclerViewModule config = module.getConfig(getContext());
-            //当前有SRV的全局配置，根据配置优先级，重新初始化配置
-            if (config != null) {
-                if (refreshHeader == null) refreshHeader = config.getRefreshHeader(getContext());
-                if (loadingFooter == null) loadingFooter = config.getLoadingFooter(getContext());
-            }
+        config = SRVConfig.getInstance(getContext()).getConfig();
+        if (config != null) {
+            if (refreshHeader == null) refreshHeader = config.getRefreshHeader(getContext());
+            if (loadingFooter == null) loadingFooter = config.getLoadingFooter(getContext());
         }
     }
 
@@ -390,7 +386,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         }
         loadingFooter.initFooter();
         wrapperAdapter.setLoadFooter(loadingFooter);
-        if (!isLoadingEnable) loadingFooter.loadingOver();
+        loadingFooter.loadEnd();
         //刷新和加载只支持垂直方向的LinearLayoutManager和GridLayoutManager布局
         addOnScrollListener(new OnScrollListener() {
             @Override
@@ -412,7 +408,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         boolean isEmpty = wrapperAdapter.isEmpty();
         if (last == itemCount && !isEmpty && !isLoading) {
             isLoading = true;
-            loadingFooter.loading();
+            loadingFooter.loadBegin();
             loadListener.loading();
         }
     }
@@ -443,7 +439,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     public void loadingComplete() {
         if (loadingFooter != null) {
             isLoading = false;
-            loadingFooter.loadingOver();
+            loadingFooter.loadEnd();
         }
     }
 

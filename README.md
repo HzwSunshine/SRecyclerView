@@ -19,7 +19,7 @@
 
 # Download
 use Gradle:&nbsp;&nbsp;&nbsp;&nbsp;
-    [compile 'com.github.hzw:srecyclerview:1.1.4'](https://github.com/HzwSunshine/SRecyclerView)
+    [compile 'com.github.hzw:srecyclerview:1.1.5'](https://github.com/HzwSunshine/SRecyclerView)
   
 
 # ProGuard
@@ -27,6 +27,9 @@ use Gradle:&nbsp;&nbsp;&nbsp;&nbsp;
 
 
 # Update History
+
+> * 2017.9.18     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.5 </br>
+修改获取全局配置的逻辑，解决头部的手势偏移问题，完善尾部加载逻辑，添加分组测试类
 
 > * 2017.9.6     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.4 </br>
 修改添加头部和尾部的逻辑，可以在setAdapter之前或之后添加了
@@ -46,5 +49,20 @@ use Gradle:&nbsp;&nbsp;&nbsp;&nbsp;
 > * 2017.7.18    &nbsp;&nbsp;&nbsp;&nbsp;版本：1.0.0 </br>
 完成SRecyclerView，测试并使用了一段时间。2017.7.18首次提交SRecyclerView到GitHub，同时提交到JCenter
 
+License
+-------
 
+    Copyright 2017 hzwsunshine
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 

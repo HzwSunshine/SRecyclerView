@@ -71,7 +71,7 @@ public abstract class AbsRefreshHeader extends LinearLayout {
         currentHeight += delay;
         setHeight(currentHeight);
         //拖动时的状态
-        if (getHeight() == 0) {
+        if (getCurrentHeight() == 0) {
             currentState = NORMAL;
             refresh(NORMAL, currentHeight);
         } else if (getHeight() < refreshHeight) {
@@ -150,6 +150,10 @@ public abstract class AbsRefreshHeader extends LinearLayout {
         ViewGroup.LayoutParams params = getLayoutParams();
         params.height = height;
         setLayoutParams(params);
+    }
+
+    private int getCurrentHeight() {
+        return getLayoutParams().height;
     }
 
     final boolean isMove() {

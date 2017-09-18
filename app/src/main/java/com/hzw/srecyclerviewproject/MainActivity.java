@@ -1,6 +1,8 @@
 package com.hzw.srecyclerviewproject;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -69,11 +71,17 @@ public class MainActivity extends AppCompatActivity {
                 if (position == 0) {
                     recyclerView.startRefresh(true);
                 }
+                if (position == 1) {
+                    startActivity(new Intent(MainActivity.this, TestActivity.class));
+                }
             }
         });
 
         //可以设置一个EmptyView
         recyclerView.setEmptyView(emptyView);
+
+        //可以在xml中配置分割线，也可以在代码中设置分割线
+        recyclerView.setDivider(Color.LTGRAY, 3, 30, 0);
 
         //可以手动设置一个刷新头部，应该在setAdapter方法之前调用，适用于某个列表需要特殊刷新头的场景
         //SRecyclerView的头部设置有两种种方法：代码设置，全局配置。如果两种方法都没有设置，则适用默认自带的默认刷新头和加载尾
@@ -89,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         //          android:value="SRecyclerViewModule" />
 
 
-        //测试添加尾部
+//        //测试添加尾部
         View footer = LayoutInflater.from(this).inflate(R.layout.footer_test, recyclerView, false);
         recyclerView.addFooter(footer);
 
@@ -100,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
         //测试添加头部
         View header = LayoutInflater.from(this).inflate(R.layout.header_test, recyclerView, false);
         recyclerView.addHeader(header);
-
 
         //SRV的代码刷新，应该在setAdapter方法之后调用，true表示会有刷新动画，false无任何动画
         recyclerView.startRefresh(true);
@@ -119,6 +126,8 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < 15; i++) {
             if (i == 0) {
                 list.add("自动刷新");
+            } else if (i == 1) {
+                list.add("测试 BaseSRVAdapter 的分组");
             } else {
                 list.add("数据  " + i);
             }
