@@ -84,32 +84,35 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setDivider(Color.LTGRAY, 3, 30, 0);
 
         //可以手动设置一个刷新头部，应该在setAdapter方法之前调用，适用于某个列表需要特殊刷新头的场景
-        //SRecyclerView的头部设置有两种种方法：代码设置，全局配置。如果两种方法都没有设置，则适用默认自带的默认刷新头和加载尾
+        //SRecyclerView的刷新头部和加载尾部的设置有两种种方法：
+        // 代码设置，全局配置。如果两种方法都没有设置，则使用自带的默认刷新头和加载尾
         //recyclerView.setRefreshHeader(new TestRefreshHeader(this));
         //recyclerView.setLoadingFooter(new TestLoadFooter(this));
 
 
-        //也可以新建一个类，并实现SRecyclerViewModule接口，并在AndroidManifest.xml中添加meta-data，
-        // 对SRV进行全局配置，name为实现类的路径，value必须为SRecyclerViewModule接口名称
+        //SRecyclerView的刷新头部和加载尾部的全局配置需要新建一个类，
+        // 并实现SRecyclerViewModule接口，并在AndroidManifest.xml中添加meta-data，
+        // 对SRV进行全局配置，name为实现类的路径，value必须为接口名称： "SRecyclerViewModule"
         //示例如下
         // <meta-data
         //          android:name="com.hzw.srecyclerviewproject.TestSRVModule"
         //          android:value="SRecyclerViewModule" />
 
 
-//        //测试添加尾部
+        //可以添加一个或多个尾部
         View footer = LayoutInflater.from(this).inflate(R.layout.footer_test, recyclerView, false);
-        recyclerView.addFooter(footer);
+        //recyclerView.addFooter(footer);
 
-        //这里的适配器使用的一个简易的SRV适配器，同样也可以用于普通的RecyclerView，当然这里也可以用原生的适配器
+        //这里的适配器使用的一个简易的SRV适配器：BaseSRVAdapter，可以很大程度上减少适配器的代码量，
+        // 这个适配器同样也可以用于普通的RecyclerView，当然这里也可以用原生的适配器
         recyclerView.setAdapter(new SRVAdapter(list));
         //recyclerView.setAdapter(new InitAdapter(list, this));
 
-        //测试添加头部
+        //可以添加一个或多个头部
         View header = LayoutInflater.from(this).inflate(R.layout.header_test, recyclerView, false);
         recyclerView.addHeader(header);
 
-        //SRV的代码刷新，应该在setAdapter方法之后调用，true表示会有刷新动画，false无任何动画
+        //SRV的代码刷新，应该在setAdapter方法之后调用，true表示有刷新动画，false无动画
         recyclerView.startRefresh(true);
 
 
@@ -136,10 +139,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadData() {
+        int index = list.size() + 1;
         for (int i = 15; i < 30; i++) {
             list.add("数据  " + i);
         }
-        recyclerView.getAdapter().notifyDataSetChanged();
+        recyclerView.getAdapter().notifyItemInserted(index);
     }
 
 

@@ -1,14 +1,13 @@
 package com.hzw.srecyclerview;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 /**
- * 功能：加载尾部的基类
+ * 功能：抽象的加载尾部，可继承并自定义加载尾部
  * Created by 何志伟 on 2017/7/10.
  */
 
@@ -18,27 +17,33 @@ public abstract class AbsLoadFooter extends LinearLayout {
         super(context);
     }
 
-    public AbsLoadFooter(Context context, @Nullable AttributeSet attrs) {
+    public AbsLoadFooter(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public AbsLoadFooter(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public AbsLoadFooter(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
     final void initFooter() {
-        removeAllViews();
         LayoutParams params = new LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         setLayoutParams(params);
+        setVisibility(GONE);
         setGravity(Gravity.CENTER);
         init();
+    }
+
+    final void loading() {
+        if (getVisibility() == GONE) setVisibility(VISIBLE);
+        loadBegin();
     }
 
     /**
      * 刷新结束后如果有需要，可重写此方法重置LoadFooter
      */
     public void reset() {
+        setVisibility(GONE);
     }
 
     /**

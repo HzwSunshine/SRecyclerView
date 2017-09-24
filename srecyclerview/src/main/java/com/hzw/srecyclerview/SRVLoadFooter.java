@@ -1,7 +1,6 @@
 package com.hzw.srecyclerview;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,11 +17,11 @@ class SRVLoadFooter extends AbsLoadFooter {
         super(context);
     }
 
-    public SRVLoadFooter(Context context, @Nullable AttributeSet attrs) {
+    public SRVLoadFooter(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public SRVLoadFooter(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public SRVLoadFooter(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 

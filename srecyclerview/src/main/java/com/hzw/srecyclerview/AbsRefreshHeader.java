@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -14,7 +13,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
 
 /**
- * 功能：抽象的刷新头部，自定义头部可继承并自定义
+ * 功能：抽象的刷新头部，可继承并自定义刷新头部
  * Created by 何志伟 on 2017/7/6.
  */
 
@@ -27,6 +26,7 @@ public abstract class AbsRefreshHeader extends LinearLayout {
     protected final static int PREPARE_NORMAL = 2;//刷新前的状态，未超过刷新临界值
     protected final static int PREPARE_REFRESH = 3;//刷新前的状态，已超过刷新临界值
     private ValueAnimator animator;
+    private boolean isAnimRefresh;
     private boolean isRefreshing;
     private int refreshHeight;
     private int currentHeight;
@@ -37,16 +37,15 @@ public abstract class AbsRefreshHeader extends LinearLayout {
         super(context);
     }
 
-    public AbsRefreshHeader(Context context, @Nullable AttributeSet attrs) {
+    public AbsRefreshHeader(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public AbsRefreshHeader(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public AbsRefreshHeader(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
     final void initHeader() {
-        removeAllViews();
         ViewGroup.LayoutParams params = new LinearLayoutCompat.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 0);
         setLayoutParams(params);
@@ -156,7 +155,7 @@ public abstract class AbsRefreshHeader extends LinearLayout {
         return getLayoutParams().height;
     }
 
-    final boolean isMove() {
+    final boolean isDelay() {
         return getLayoutParams().height > 0 && currentState != REFRESH;
     }
 
@@ -204,19 +203,22 @@ public abstract class AbsRefreshHeader extends LinearLayout {
     final void startRefresh(final boolean isAnim) {
         if (loadListener == null || currentState == REFRESH || isRefreshing) return;
         isRefreshing = true;
+        isAnimRefresh = isAnim;
         int delay = getWidth() == 0 ? 500 : 0;
-        postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                currentState = NORMAL;
-                if (isAnim) {
-                    heightChangeAnim();
-                } else {
-                    heightChangeAnimEnd();
-                }
-            }
-        }, delay);
+        postDelayed(runnable, delay);
     }
+
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            currentState = NORMAL;
+            if (isAnimRefresh) {
+                heightChangeAnim();
+            } else {
+                heightChangeAnimEnd();
+            }
+        }
+    };
 
     interface RefreshListener {
         void refresh();
@@ -252,6 +254,7 @@ public abstract class AbsRefreshHeader extends LinearLayout {
      * 如果子类中有动画等未完成，可以重写此方法取消动画等耗时操作，避免造成内存泄露
      */
     public void srvDetachedFromWindow() {
+        removeCallbacks(runnable);
         if (animator != null && animator.isRunning()) {
             animator.cancel();
             heightChangeAnimEnd();

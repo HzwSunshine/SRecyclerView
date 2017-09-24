@@ -1,7 +1,6 @@
 package com.hzw.srecyclerview;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,11 +23,11 @@ class SRVRefreshHeader extends AbsRefreshHeader {
         super(context);
     }
 
-    public SRVRefreshHeader(Context context, @Nullable AttributeSet attrs) {
+    public SRVRefreshHeader(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public SRVRefreshHeader(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public SRVRefreshHeader(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 

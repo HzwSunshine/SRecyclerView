@@ -19,7 +19,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 
 /**
- * 功能：添加滑动监听加载数据
+ * 功能：刷新与加载更多
  * Created by 何志伟 on 2017/7/6.
  */
 public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffsetChangedListener {
@@ -98,7 +98,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
                 if (isRefreshEnable && isTop() && isAppBarExpand) {
                     refreshHeader.move(delay);
                     setOverScrollMode(View.OVER_SCROLL_NEVER);
-                    if (refreshHeader.isMove()) return false;
+                    if (refreshHeader.isDelay()) return false;
                 }
                 break;
             case MotionEvent.ACTION_UP:
@@ -161,30 +161,30 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
         @Override
         public void onItemRangeInserted(int positionStart, int itemCount) {
-            wrapperAdapter.notifyItemRangeInserted(positionStart, itemCount);
+            wrapperAdapter.notifyItemRangeInserted(positionStart + 1, itemCount);
             checkEmpty();
         }
 
         @Override
         public void onItemRangeRemoved(int positionStart, int itemCount) {
-            wrapperAdapter.notifyItemRangeRemoved(positionStart, itemCount);
+            wrapperAdapter.notifyItemRangeRemoved(positionStart + 1, itemCount);
             checkEmpty();
         }
 
         @Override
         public void onItemRangeChanged(int positionStart, int itemCount) {
-            wrapperAdapter.notifyItemRangeChanged(positionStart, itemCount);
+            wrapperAdapter.notifyItemRangeChanged(positionStart + 1, itemCount);
         }
 
         @Override
         public void onItemRangeChanged(int positionStart, int itemCount, Object payload) {
             super.onItemRangeChanged(positionStart, itemCount, payload);
-            wrapperAdapter.notifyItemRangeChanged(positionStart, itemCount, payload);
+            wrapperAdapter.notifyItemRangeChanged(positionStart + 1, itemCount, payload);
         }
 
         @Override
         public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
-            wrapperAdapter.notifyItemMoved(fromPosition, toPosition);
+            wrapperAdapter.notifyItemMoved(fromPosition + 1, toPosition);
         }
     };
 
@@ -386,7 +386,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         }
         loadingFooter.initFooter();
         wrapperAdapter.setLoadFooter(loadingFooter);
-        loadingFooter.loadEnd();
+        if (!isLoadingEnable) loadingFooter.setVisibility(GONE);
         //刷新和加载只支持垂直方向的LinearLayoutManager和GridLayoutManager布局
         addOnScrollListener(new OnScrollListener() {
             @Override
@@ -408,7 +408,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         boolean isEmpty = wrapperAdapter.isEmpty();
         if (last == itemCount && !isEmpty && !isLoading) {
             isLoading = true;
-            loadingFooter.loadBegin();
+            loadingFooter.loading();
             loadListener.loading();
         }
     }

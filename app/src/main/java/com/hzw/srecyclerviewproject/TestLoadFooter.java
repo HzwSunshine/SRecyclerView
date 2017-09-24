@@ -47,7 +47,7 @@ public class TestLoadFooter extends AbsLoadFooter {
 
     @Override
     public void loadEnd() {
-        load.setVisibility(GONE);
+        load.setVisibility(VISIBLE);
         noMore.setVisibility(GONE);
     }
 
@@ -62,15 +62,18 @@ public class TestLoadFooter extends AbsLoadFooter {
         setLayoutParams(params);
     }
 
-    /**
-     * 刷新结束后如果需要重置加载尾部，可重写此方法重置LoadFooter
-     */
     @Override
     public void reset() {
+        super.reset();
         ViewGroup.LayoutParams params = getLayoutParams();
         params.height = dip2px(45);
         setLayoutParams(params);
     }
+
+    /**
+     * 刷新结束后如果需要重置加载尾部，可重写此方法重置LoadFooter
+     */
+
 
     private int dip2px(float value) {
         final float scale = Resources.getSystem().getDisplayMetrics().density;

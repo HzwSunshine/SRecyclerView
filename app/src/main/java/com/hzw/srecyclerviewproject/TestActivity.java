@@ -1,5 +1,6 @@
 package com.hzw.srecyclerviewproject;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -20,6 +21,7 @@ public class TestActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         srv = new SRecyclerView(this);
         setContentView(srv);
+        srv.setDivider(Color.LTGRAY,2,30,0);
         srv.setLoadListener(new SRecyclerView.LoadListener() {
             @Override
             public void refresh() {
