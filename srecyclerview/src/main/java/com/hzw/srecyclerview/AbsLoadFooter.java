@@ -10,7 +10,6 @@ import android.widget.LinearLayout;
  * 功能：抽象的加载尾部，可继承并自定义加载尾部
  * Created by 何志伟 on 2017/7/10.
  */
-
 public abstract class AbsLoadFooter extends LinearLayout {
 
     public AbsLoadFooter(Context context) {

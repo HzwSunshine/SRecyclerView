@@ -19,7 +19,7 @@
 
 # Download
 use Gradle:&nbsp;&nbsp;&nbsp;&nbsp;
-    [compile 'com.github.hzw:srecyclerview:1.1.5'](https://github.com/HzwSunshine/SRecyclerView)
+    [compile 'com.github.hzw:srecyclerview:1.1.6'](https://github.com/HzwSunshine/SRecyclerView)
   
 
 # ProGuard
@@ -27,6 +27,9 @@ use Gradle:&nbsp;&nbsp;&nbsp;&nbsp;
 
 
 # Update History
+
+> * 2017.9.25     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.6 </br>
+完善加载尾部的加载逻辑，完善一些小细节
 
 > * 2017.9.18     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.5 </br>
 修改获取全局配置的逻辑，解决头部的手势偏移问题，完善尾部加载逻辑，添加分组测试类
