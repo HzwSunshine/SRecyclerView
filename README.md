@@ -19,7 +19,7 @@
 
 # Download
 use Gradle:&nbsp;&nbsp;&nbsp;&nbsp;
-    [compile 'com.github.hzw:srecyclerview:1.1.6'](https://github.com/HzwSunshine/SRecyclerView)
+    [compile 'com.github.hzw:srecyclerview:1.1.7'](https://github.com/HzwSunshine/SRecyclerView)
   
 
 # ProGuard
@@ -27,6 +27,9 @@ use Gradle:&nbsp;&nbsp;&nbsp;&nbsp;
 
 
 # Update History
+
+> * 2017.10.10     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.7 </br>
+修复多手势下拉时，刷新头部偏移的bug
 
 > * 2017.9.25     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.6 </br>
 完善加载尾部的加载逻辑，完善一些小细节
@@ -50,7 +53,7 @@ use Gradle:&nbsp;&nbsp;&nbsp;&nbsp;
 完善刷新逻辑，版本更新为1.1.0
 
 > * 2017.7.18    &nbsp;&nbsp;&nbsp;&nbsp;版本：1.0.0 </br>
-完成SRecyclerView，测试并使用了一段时间。2017.7.18首次提交SRecyclerView到GitHub，同时提交到JCenter
+完成SRecyclerView，测试并使用了一段时间后提交到GitHub，同时提交到JCenter
 
 License
 -------

@@ -16,7 +16,6 @@ import android.widget.LinearLayout;
  * 功能：抽象的刷新头部，可继承并自定义刷新头部
  * Created by 何志伟 on 2017/7/6.
  */
-
 public abstract class AbsRefreshHeader extends LinearLayout {
 
     protected final static int HEADER_BOTTOM = 1;
@@ -180,6 +179,7 @@ public abstract class AbsRefreshHeader extends LinearLayout {
                 currentHeight = refreshHeight;
                 break;
             case NORMAL://代码调用自动刷新，当前已开始刷新
+                if (currentHeight < 0) return;
                 currentState = REFRESH;
                 currentHeight = refreshHeight;
                 refresh(REFRESH, refreshHeight);

@@ -11,7 +11,6 @@ import java.util.List;
  * 功能：SRV的简易适配器，可用于普通的RecyclerView
  * Created by 何志伟 on 2017/7/13.
  */
-
 public abstract class BaseSRVAdapter<T> extends RecyclerView.Adapter<SRVHolder> {
 
     public static final int TYPE_NORMAL = 0;
