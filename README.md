@@ -28,6 +28,9 @@ use Gradle:&nbsp;&nbsp;&nbsp;&nbsp;
 
 # Update History
 
+> * 2018.2.8     &nbsp;&nbsp;&nbsp;&nbsp;版本：--- </br>
+优化加载更多的逻辑；移除优化AbsLoadFooter的部分方法；增加loadingError()方法；
+
 > * 2017.10.10     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.7 </br>
 修复多手势下拉时，刷新头部偏移的bug
 
