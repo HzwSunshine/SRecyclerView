@@ -192,7 +192,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
     public void setEmptyView(View view) {
         emptyView = view;
-        if (emptyView != null) {
+        if (emptyView != null && emptyView.getVisibility() == VISIBLE) {
             emptyView.setVisibility(GONE);
         }
         if (wrapperAdapter != null) {
@@ -345,6 +345,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             isLoading = false;
             refreshHeader.refreshComplete();
             loadingFooter.reset();
+            loadingFooter.setTag(false);
         }
     }
 
@@ -379,10 +380,26 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         wrapperAdapter.setLoadFooter(loadingFooter);
         if (!isLoadingEnable) loadingFooter.setVisibility(GONE);
         //刷新和加载只支持垂直方向的LinearLayoutManager和GridLayoutManager布局
+        loadingFooter.setTag(false);
         addOnScrollListener(new OnScrollListener() {
             @Override public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                if (newState == SCROLL_STATE_IDLE && isLoadingEnable && isPullUp) {
-                    //这里manager的类型，在isInitLoad方法中已经做过验证，可以直接强转
+                boolean isScroll = (boolean) loadingFooter.getTag();
+                if (!isScroll && newState == SCROLL_STATE_IDLE && isLoadingEnable && isPullUp) {
+                    LinearLayoutManager manager = (LinearLayoutManager) getLayoutManager();
+                    int lastPosition = manager.findLastVisibleItemPosition();
+                    ViewHolder holder = recyclerView.findViewHolderForLayoutPosition(lastPosition);
+                    if (holder == null) return;
+                    int offset = holder.itemView instanceof AbsLoadFooter ? 0 : (int) dividerHeight;
+                    int rvBottom = recyclerView.getBottom() - recyclerView.getTop() - offset;
+                    if (rvBottom - holder.itemView.getBottom() > 0) {//item未填充满RecyclerView
+                        judgeLastItem(lastPosition);
+                    }
+                }
+            }
+
+            @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0 && isLoadingEnable) {
+                    loadingFooter.setTag(true);
                     LinearLayoutManager manager = (LinearLayoutManager) getLayoutManager();
                     judgeLastItem(manager.findLastVisibleItemPosition());
                 }
@@ -394,11 +411,9 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
      * 判断是否开始加载更多，只有滑动到最后一个Item，并且当前有数据时，才会加载更多
      */
     private void judgeLastItem(int last) {
-        int itemCount = wrapperAdapter.getItemCount() - 1;
-        boolean isEmpty = wrapperAdapter.isEmpty();
-        if (last == itemCount && !isEmpty && !isLoading) {
+        if (!isLoading && last > 1 && last == (wrapperAdapter.getItemCount() - 1)) {
             isLoading = true;
-            loadingFooter.loading();
+            loadingFooter.loadBegin();
             loadListener.loading();
         }
     }
@@ -429,7 +444,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     public void loadingComplete() {
         if (loadingFooter != null) {
             isLoading = false;
-            loadingFooter.loadEnd();
+            loadingFooter.loadSuccess();
         }
     }
 
@@ -444,6 +459,13 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         if (loadingFooter != null) {
             isLoading = true;
             loadingFooter.loadingNoMoreData();
+        }
+    }
+
+    public void loadingError() {
+        if (loadingFooter != null) {
+            isLoading = false;
+            loadingFooter.loadingError();
         }
     }
     /*------------------------------------------尾部操作-------------------------------end------*/
@@ -522,7 +544,6 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
                 }
             }
         }
-
 
         @Override public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             if (headers.get(viewType) != null) {
@@ -613,7 +634,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     /*-----------------------------------Item的点击事件-------------------------------------*/
     private class ClickListener implements View.OnClickListener {
         @Override public void onClick(View v) {
-            if (clickListener != null) clickListener.click(v, (Integer) v.getTag());
+            if (clickListener != null) clickListener.click(v, (int) v.getTag());
         }
     }
 

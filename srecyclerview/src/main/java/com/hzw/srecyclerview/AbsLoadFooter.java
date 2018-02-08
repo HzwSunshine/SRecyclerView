@@ -12,6 +12,23 @@ import android.widget.LinearLayout;
  */
 public abstract class AbsLoadFooter extends LinearLayout {
 
+    /**
+     * 加载完成，即加载成功
+     */
+    protected final static int LOAD_SUCCESS = 0;
+    /**
+     * 加载开始
+     */
+    protected final static int LOAD_BEGAIN = 1;
+    /**
+     * 加载无更多数据
+     */
+    protected final static int LOAD_NO_MORE = 2;
+    /**
+     * 加载失败或错误
+     */
+    protected final static int LOAD_ERROR = 3;
+
     public AbsLoadFooter(Context context) {
         super(context);
     }
@@ -25,17 +42,31 @@ public abstract class AbsLoadFooter extends LinearLayout {
     }
 
     final void initFooter() {
-        LayoutParams params = new LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LayoutParams params =
+                new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         setLayoutParams(params);
         setVisibility(GONE);
         setGravity(Gravity.CENTER);
         init();
     }
 
-    final void loading() {
-        if (getVisibility() == GONE) setVisibility(VISIBLE);
-        loadBegin();
+    final void loadBegin() {
+        if (getVisibility() == GONE){
+            setVisibility(VISIBLE);
+        }
+        loadingState(LOAD_BEGAIN);
+    }
+
+    final void loadSuccess() {
+        loadingState(LOAD_SUCCESS);
+    }
+
+    final void loadingNoMoreData() {
+        loadingState(LOAD_NO_MORE);
+    }
+
+    final void loadingError() {
+        loadingState(LOAD_ERROR);
     }
 
     /**
@@ -58,19 +89,10 @@ public abstract class AbsLoadFooter extends LinearLayout {
     public abstract void init();
 
     /**
-     * 开始加载
+     * 加载更多的加载状态
+     *
+     * @param state 状态
      */
-    public abstract void loadBegin();
-
-    /**
-     * 加载结束
-     */
-    public abstract void loadEnd();
-
-    /**
-     * 没有更多的加载数据
-     */
-    public abstract void loadingNoMoreData();
-
+    public abstract void loadingState(int state);
 
 }

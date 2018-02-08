@@ -39,29 +39,33 @@ public class TestLoadFooter extends AbsLoadFooter {
         addView(loadView);
     }
 
-    @Override
-    public void loadBegin() {
-        load.setVisibility(VISIBLE);
-        noMore.setVisibility(GONE);
-    }
-
-    @Override
-    public void loadEnd() {
-        load.setVisibility(VISIBLE);
-        noMore.setVisibility(GONE);
+    @Override public void loadingState(int state) {
+        switch (state) {
+            case LOAD_SUCCESS:
+                load.setVisibility(VISIBLE);
+                noMore.setVisibility(GONE);
+                break;
+            case LOAD_ERROR:
+                load.setVisibility(GONE);
+                noMore.setVisibility(GONE);
+                break;
+            case LOAD_NO_MORE:
+                //据说有一种需求是，没数据时，直接不显示无数据的UI，此时可设置高度为0，
+                //然后重写reset()方法，当列表刷新时会重置加载尾部
+                ViewGroup.LayoutParams params = getLayoutParams();
+                params.height = 0;
+                setLayoutParams(params);
+                break;
+            case LOAD_BEGAIN:
+                load.setVisibility(VISIBLE);
+                noMore.setVisibility(GONE);
+                break;
+        }
     }
 
     /**
-     * 据说有一种需求是，没数据时，直接不显示无数据的UI，此时可设置高度为0，然后重写reset()方法，
-     * 当列表刷新时会重置加载尾部
+     * 刷新结束后如果需要重置加载尾部，可重写此方法重置LoadFooter
      */
-    @Override
-    public void loadingNoMoreData() {
-        ViewGroup.LayoutParams params = getLayoutParams();
-        params.height = 0;
-        setLayoutParams(params);
-    }
-
     @Override
     public void reset() {
         super.reset();
@@ -70,9 +74,7 @@ public class TestLoadFooter extends AbsLoadFooter {
         setLayoutParams(params);
     }
 
-    /**
-     * 刷新结束后如果需要重置加载尾部，可重写此方法重置LoadFooter
-     */
+
 
 
     private int dip2px(float value) {
