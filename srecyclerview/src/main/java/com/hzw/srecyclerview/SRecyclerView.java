@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
@@ -155,26 +156,30 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         }
 
         @Override public void onItemRangeInserted(int positionStart, int itemCount) {
-            wrapperAdapter.notifyItemRangeInserted(positionStart + 1, itemCount);
+            wrapperAdapter.notifyItemRangeInserted(positionStart + getOffset(), itemCount);
             checkEmpty();
         }
 
         @Override public void onItemRangeRemoved(int positionStart, int itemCount) {
-            wrapperAdapter.notifyItemRangeRemoved(positionStart + 1, itemCount);
+            wrapperAdapter.notifyItemRangeRemoved(positionStart + getOffset(), itemCount);
             checkEmpty();
         }
 
         @Override public void onItemRangeChanged(int positionStart, int itemCount) {
-            wrapperAdapter.notifyItemRangeChanged(positionStart + 1, itemCount);
+            wrapperAdapter.notifyItemRangeChanged(positionStart + getOffset(), itemCount);
         }
 
         @Override public void onItemRangeChanged(int positionStart, int itemCount, Object payload) {
             super.onItemRangeChanged(positionStart, itemCount, payload);
-            wrapperAdapter.notifyItemRangeChanged(positionStart + 1, itemCount, payload);
+            wrapperAdapter.notifyItemRangeChanged(positionStart + getOffset(), itemCount, payload);
         }
 
         @Override public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
-            wrapperAdapter.notifyItemMoved(fromPosition + 1, toPosition);
+            wrapperAdapter.notifyItemMoved(fromPosition + getOffset(), toPosition);
+        }
+
+        private int getOffset() {
+            return refreshHeader == null ? 0 : 1;
         }
     };
 
@@ -233,6 +238,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
                 || ((LinearLayoutManager) manager).getOrientation() != VERTICAL) {
             refreshHeader = null;
             loadingFooter = null;
+            isLoadingEnable = false;
+            isRefreshEnable = false;
             return false;
         }
         return true;
