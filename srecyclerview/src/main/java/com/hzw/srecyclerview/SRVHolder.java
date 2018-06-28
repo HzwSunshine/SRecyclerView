@@ -22,16 +22,15 @@ public class SRVHolder extends RecyclerView.ViewHolder {
     }
 
     public static SRVHolder getViewHolder(View itemView) {
-        SRVHolder holder = (SRVHolder) itemView.getTag();
+        SRVHolder holder = (SRVHolder) itemView.getTag(R.id.srv_item_holder);
         if (holder == null) {
             holder = new SRVHolder(itemView);
-            itemView.setTag(holder);
+            itemView.setTag(R.id.srv_item_holder, holder);
         }
         return holder;
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends View> T getView(int id) {
+    @SuppressWarnings("unchecked") public <T extends View> T getView(int id) {
         View childView = views.get(id);
         if (childView == null) {
             childView = itemView.findViewById(id);

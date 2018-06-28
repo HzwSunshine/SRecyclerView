@@ -12,7 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,8 +30,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     private AbsLoadFooter loadingFooter;
     private SRecyclerViewModule config;
     private LoadListener loadListener;
+    private AbsEmptyView emptyView;
     private SRVDivider divider;
-    private View emptyView;
 
     private SparseArray<View> headers = new SparseArray<>();
     private SparseArray<View> footers = new SparseArray<>();
@@ -185,21 +184,25 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
     private void checkEmpty() {
         if (emptyView != null && wrapperAdapter != null) {
-            if (wrapperAdapter.isEmpty() && emptyView.getVisibility() == GONE) {
-                emptyView.setVisibility(VISIBLE);
-                this.setVisibility(GONE);
-            } else if (emptyView.getVisibility() == VISIBLE) {
-                emptyView.setVisibility(GONE);
-                this.setVisibility(VISIBLE);
+            boolean isCurrentEmpty = (boolean) emptyView.getTag();
+            if (wrapperAdapter.isEmpty() && !isCurrentEmpty) {
+                wrapperAdapter.showEmptyView(true);
+                emptyView.setTag(true);
+            } else if (isCurrentEmpty) {
+                wrapperAdapter.showEmptyView(false);
+                emptyView.setTag(false);
             }
         }
     }
 
-    public void setEmptyView(View view) {
+    public void setEmptyView(AbsEmptyView view) {
         emptyView = view;
-        if (emptyView != null && emptyView.getVisibility() == VISIBLE) {
-            emptyView.setVisibility(GONE);
-        }
+        emptyView.setTag(false);//no empty
+        emptyView.setEmptyRefreshListener(new AbsEmptyView.EmptyRefreshListener() {
+            @Override public void emptyRefresh(boolean isAnim) {
+                startRefresh(isAnim);
+            }
+        });
         if (wrapperAdapter != null) {
             mObserver.onChanged();
         }
@@ -212,12 +215,12 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         wrapperAdapter = new WrapperAdapter(adapter);
         super.setAdapter(wrapperAdapter);
         adapter.registerAdapterDataObserver(mObserver);
-        mObserver.onChanged();
         //设置了加载功能时，初始化刷新头和加载尾部
         if (config == null && loadListener != null && isInitLoad()) {
             initRefresh();
             initLoading();
         }
+        mObserver.onChanged();
     }
 
     @Override public Adapter getAdapter() {
@@ -352,16 +355,12 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             isLoading = false;
             refreshHeader.refreshComplete();
             loadingFooter.reset();
-            loadingFooter.setTag(false);
+            loadingFooter.setTag(false);//no isScroll
         }
     }
 
     public void startRefresh(boolean isAnim) {
         if (refreshHeader != null && isRefreshEnable && getAdapter() != null) {
-            if (emptyView != null && emptyView.getVisibility() == VISIBLE) {
-                this.setVisibility(VISIBLE);
-                emptyView.setVisibility(GONE);
-            }
             scrollToPosition(0);
             refreshHeader.startRefresh(isAnim);
         }
@@ -552,6 +551,16 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             }
         }
 
+        void showEmptyView(boolean isShow) {
+            if (isShow) {
+                removeFooter(loadingFooter);
+                addFooter(emptyView);
+            } else {
+                removeFooter(emptyView);
+                setLoadFooter(loadingFooter);
+            }
+        }
+
         @Override public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             if (headers.get(viewType) != null) {
                 return new Holder(headers.get(viewType));
@@ -564,7 +573,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         @SuppressWarnings("unchecked") @Override public void onBindViewHolder(ViewHolder holder, int position) {
             if (isHeader(position) || isFooter(position)) return;
             position -= getHeaderCount();
-            holder.itemView.setTag(position);
+            holder.itemView.setTag(R.id.srv_item_click, position);
             holder.itemView.setOnClickListener(listener);
             adapter.onBindViewHolder(holder, position);
         }
@@ -641,7 +650,10 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     /*-----------------------------------Item的点击事件-------------------------------------*/
     private class ClickListener implements View.OnClickListener {
         @Override public void onClick(View v) {
-            if (clickListener != null) clickListener.click(v, (int) v.getTag());
+            if (clickListener != null) {
+                int position = (int) v.getTag(R.id.srv_item_click);
+                clickListener.click(v, position);
+            }
         }
     }
 
@@ -696,7 +708,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
          * 刷新头部和加载尾部不需要分割线
          */
         private boolean isLoadView(View view) {
-            return refreshHeader == view || loadingFooter == view;
+            return refreshHeader == view || loadingFooter == view || emptyView == view;
         }
 
         @Override public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {

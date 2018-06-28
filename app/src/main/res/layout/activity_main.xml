@@ -5,11 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.hzw.srecyclerviewproject.MainActivity">
+    tools:context="com.hzw.srecyclerviewproject.MainActivity"
+    >
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
 
         <TextView
             android:layout_width="match_parent"
@@ -19,7 +21,8 @@
             android:text="SRecyclerView"
             android:textColor="#FFFFFF"
             android:textSize="20sp"
-            app:layout_scrollFlags="scroll|snap" />
+            app:layout_scrollFlags="scroll|snap"
+            />
 
         <TextView
             android:layout_width="match_parent"
@@ -28,39 +31,21 @@
             android:gravity="center"
             android:text="SRecyclerView测试，已经发布到JCenter上"
             android:textColor="#FFFFFF"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            />
     </android.support.design.widget.AppBarLayout>
 
-    <RelativeLayout
+    <com.hzw.srecyclerview.SRecyclerView
+        android:id="@+id/srv_test"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:background="#F0F0F0"
+        app:dividerColor="#BEBEBE"
+        app:dividerHeight="0.8dp"
+        app:dividerLeftMargin="10dp"
+        app:dividerRightMargin="0dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
 
-        <TextView
-            android:id="@+id/emptyView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="还没有任何数据呢！"
-            android:textColor="#333333"
-            android:textSize="20sp"
-            android:visibility="gone" />
-
-        <com.hzw.srecyclerview.SRecyclerView
-            android:id="@+id/srv_test"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#F0F0F0"
-            app:dividerColor="#BEBEBE"
-            app:dividerHeight="0.8dp"
-            app:dividerLeftMargin="10dp"
-            app:dividerRightMargin="0dp"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        </com.hzw.srecyclerview.SRecyclerView>
-
-
-    </RelativeLayout>
-
-
+    </com.hzw.srecyclerview.SRecyclerView>
 </android.support.design.widget.CoordinatorLayout>

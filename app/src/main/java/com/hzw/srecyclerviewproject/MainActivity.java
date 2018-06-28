@@ -25,14 +25,12 @@ public class MainActivity extends AppCompatActivity {
 
     private List<String> list = new ArrayList<>();
     private SRecyclerView recyclerView;
-    private View emptyView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        recyclerView = (SRecyclerView) findViewById(R.id.srv_test);
-        emptyView = findViewById(R.id.emptyView);
+        recyclerView = findViewById(R.id.srv_test);
 
         //如果设置了加载监听，就是需要刷新加载功能，如果没有设置加载监听，那么就没有下拉与底部加载
         recyclerView.setLoadListener(new SRecyclerView.LoadListener() {
@@ -78,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //可以设置一个EmptyView
-        recyclerView.setEmptyView(emptyView);
+        recyclerView.setEmptyView(new TestEmptyView(this));
 
         //可以在xml中配置分割线，也可以在代码中设置分割线
         recyclerView.setDivider(Color.LTGRAY, 3, 30, 0);
@@ -110,10 +108,10 @@ public class MainActivity extends AppCompatActivity {
 
         //可以添加一个或多个头部
         View header = LayoutInflater.from(this).inflate(R.layout.header_test, recyclerView, false);
-        recyclerView.addHeader(header);
+        //recyclerView.addHeader(header);
 
         //SRV的代码刷新，应该在setAdapter方法之后调用，true表示有刷新动画，false无动画
-        recyclerView.startRefresh(true);
+        //recyclerView.startRefresh(true);
 
 
         //测试数据
@@ -196,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
 
             Holder(View itemView) {
                 super(itemView);
-                textView = (TextView) itemView.findViewById(R.id.tv_item_test);
+                textView = itemView.findViewById(R.id.tv_item_test);
             }
         }
     }

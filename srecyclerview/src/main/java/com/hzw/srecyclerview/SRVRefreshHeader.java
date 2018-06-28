@@ -34,7 +34,7 @@ class SRVRefreshHeader extends AbsRefreshHeader {
     @Override
     public void init() {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.srv_refresh_header, this, false);
-        tips = (TextView) view.findViewById(R.id.tv_src_refreshTips);
+        tips = view.findViewById(R.id.tv_src_refreshTips);
         progress = view.findViewById(R.id.pb_srv_refreshProgress);
         icon = view.findViewById(R.id.img_srv_refreshIcon);
         addView(view);
