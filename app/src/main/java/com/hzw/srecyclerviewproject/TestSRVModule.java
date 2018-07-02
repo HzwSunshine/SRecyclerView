@@ -2,6 +2,7 @@ package com.hzw.srecyclerviewproject;
 
 import android.content.Context;
 
+import com.hzw.srecyclerview.AbsEmptyView;
 import com.hzw.srecyclerview.AbsLoadFooter;
 import com.hzw.srecyclerview.AbsRefreshHeader;
 import com.hzw.srecyclerview.SRecyclerViewModule;
@@ -25,5 +26,8 @@ public class TestSRVModule implements SRecyclerViewModule {
         return new TestLoadFooter(context);
     }
 
+    @Override public AbsEmptyView getEmptyView(Context context) {
+        return null;
+    }
 
 }

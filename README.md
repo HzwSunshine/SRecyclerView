@@ -18,9 +18,9 @@
 
 
 # Download
-use Gradle:&nbsp;&nbsp;&nbsp;&nbsp;
-[compile 'com.github.hzw:srecyclerview:1.1.8-beta2'](https://github.com/HzwSunshine/SRecyclerView)
-or       
+**Use Gradle**:&nbsp;&nbsp;&nbsp;&nbsp;
+[compile 'com.github.hzw:srecyclerview:1.1.8-beta3'](https://github.com/HzwSunshine/SRecyclerView)
+or
 [compile 'com.github.hzw:srecyclerview:1.1.7'](https://github.com/HzwSunshine/SRecyclerView)
 
 
@@ -30,7 +30,7 @@ or
 
 # Update History
 
-> * 2018.6.28     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.8 beta2 </br>
+> * 2018.6.28     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.8 beta3 </br>
 修改空布局的添加方式，完善相关代码
 
 > * 2018.2.8     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.8 beta1 </br>

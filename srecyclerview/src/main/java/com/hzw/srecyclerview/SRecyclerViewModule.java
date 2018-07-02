@@ -12,5 +12,6 @@ public interface SRecyclerViewModule {
 
     AbsLoadFooter getLoadingFooter(Context context);
 
+    AbsEmptyView getEmptyView(Context context);
 
 }

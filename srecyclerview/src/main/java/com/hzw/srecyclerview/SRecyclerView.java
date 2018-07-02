@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.support.annotation.LayoutRes;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
 import android.util.SparseArray;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +32,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     private AbsLoadFooter loadingFooter;
     private SRecyclerViewModule config;
     private LoadListener loadListener;
-    private AbsEmptyView emptyView;
     private SRVDivider divider;
+    private View emptyView;
 
     private SparseArray<View> headers = new SparseArray<>();
     private SparseArray<View> footers = new SparseArray<>();
@@ -187,22 +189,22 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             boolean isCurrentEmpty = (boolean) emptyView.getTag();
             if (wrapperAdapter.isEmpty() && !isCurrentEmpty) {
                 wrapperAdapter.showEmptyView(true);
-                emptyView.setTag(true);
+                emptyView.setTag(true);//empty
             } else if (isCurrentEmpty) {
                 wrapperAdapter.showEmptyView(false);
-                emptyView.setTag(false);
+                emptyView.setTag(false);//no empty
             }
         }
     }
 
-    public void setEmptyView(AbsEmptyView view) {
+    public void setEmptyView(@LayoutRes int layoutId) {
+        setEmptyView(LayoutInflater.from(getContext())
+                             .inflate(layoutId, this, false));
+    }
+
+    public void setEmptyView(View view) {
         emptyView = view;
-        emptyView.setTag(false);//no empty
-        emptyView.setEmptyRefreshListener(new AbsEmptyView.EmptyRefreshListener() {
-            @Override public void emptyRefresh(boolean isAnim) {
-                startRefresh(isAnim);
-            }
-        });
+        if (emptyView != null) emptyView.setTag(false);//no empty
         if (wrapperAdapter != null) {
             mObserver.onChanged();
         }
@@ -308,7 +310,10 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         wrapperAdapter.setRefreshHeader(refreshHeader);
         refreshHeader.setRefreshListener(new AbsRefreshHeader.RefreshListener() {
             @Override public void refresh() {
-                if (loadListener != null) loadListener.refresh();
+                if (loadListener != null) {
+                    if (emptyView != null) emptyView.setTag(false);//no empty
+                    loadListener.refresh();
+                }
             }
         });
     }
@@ -323,6 +328,14 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         if (config != null) {
             if (refreshHeader == null) refreshHeader = config.getRefreshHeader(getContext());
             if (loadingFooter == null) loadingFooter = config.getLoadingFooter(getContext());
+            if (emptyView == null) emptyView = config.getEmptyView(getContext());
+            if (emptyView != null && emptyView instanceof AbsEmptyView) {
+                ((AbsEmptyView) emptyView).setEmptyRefreshListener(new AbsEmptyView.EmptyRefreshListener() {
+                    @Override public void emptyRefresh(boolean isAnim) {
+                        startRefresh(isAnim);
+                    }
+                });
+            }
         }
     }
 

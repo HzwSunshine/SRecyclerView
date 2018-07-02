@@ -31,7 +31,7 @@ public abstract class AbsEmptyView extends FrameLayout {
         init();
     }
 
-    public void emptyRefresh(boolean isAnim) {
+    final public void emptyRefresh(boolean isAnim) {
         if (listener != null) {
             listener.emptyRefresh(isAnim);
         }
@@ -43,7 +43,7 @@ public abstract class AbsEmptyView extends FrameLayout {
 
     private EmptyRefreshListener listener;
 
-    public void setEmptyRefreshListener(EmptyRefreshListener listener) {
+    final void setEmptyRefreshListener(EmptyRefreshListener listener) {
         this.listener = listener;
     }
 
