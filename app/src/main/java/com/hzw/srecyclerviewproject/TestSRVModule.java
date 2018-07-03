@@ -27,7 +27,7 @@ public class TestSRVModule implements SRecyclerViewModule {
     }
 
     @Override public AbsEmptyView getEmptyView(Context context) {
-        return null;
+        return new TestEmptyView(context);
     }
 
 }

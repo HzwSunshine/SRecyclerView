@@ -185,7 +185,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     };
 
     private void checkEmpty() {
-        if (emptyView != null && wrapperAdapter != null) {
+        if (emptyView != null && wrapperAdapter != null && emptyView.getTag() instanceof Boolean) {
             boolean isCurrentEmpty = (boolean) emptyView.getTag();
             if (wrapperAdapter.isEmpty()) {
                 wrapperAdapter.showEmptyView(true);
@@ -326,6 +326,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             if (refreshHeader == null) refreshHeader = config.getRefreshHeader(getContext());
             if (loadingFooter == null) loadingFooter = config.getLoadingFooter(getContext());
             if (emptyView == null) emptyView = config.getEmptyView(getContext());
+            if (emptyView != null) emptyView.setTag(false);//no empty
             if (emptyView != null && emptyView instanceof AbsEmptyView) {
                 ((AbsEmptyView) emptyView).setEmptyRefreshListener(new AbsEmptyView.EmptyRefreshListener() {
                     @Override public void emptyRefresh(boolean isAnim) {

@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //可以设置一个EmptyView
-        recyclerView.setEmptyView(new TestEmptyView(this));
+        //recyclerView.setEmptyView(new View(this));
 
         //可以在xml中配置分割线，也可以在代码中设置分割线
         recyclerView.setDivider(Color.LTGRAY, 3, 30, 0);
