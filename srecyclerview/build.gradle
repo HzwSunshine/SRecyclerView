@@ -22,7 +22,7 @@ android {
         userOrg = 'hzwsunshine'
         groupId = 'com.github.hzw'
         artifactId = 'srecyclerview'
-        version = '1.1.8'
+        version = '1.2.0'
         description = 'refresh and loading recyclerview'
         website = "https://github.com/HzwSunshine/SRecyclerView"
     }

@@ -21,12 +21,12 @@
 ###  Download
 **Use Gradle**:&nbsp;&nbsp;&nbsp;&nbsp;
 
-     compile 'com.github.hzw:srecyclerview:1.1.8'
+     compile 'com.github.hzw:srecyclerview:1.2.0'
 
 
 *SRecyclerView中使用了com.android.support:design:26.1.0，如果需要使用你项目中的版本，可用以下方式：*
 
-    compile ("com.github.hzw:srecyclerview:1.1.8"){ exclude group:'com.android.support' }
+    compile ("com.github.hzw:srecyclerview:1.2.0"){ exclude group:'com.android.support' }
 
 
 
@@ -38,8 +38,8 @@
 
 # Update History
 
-> * 2018.7.3     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.8 </br>
-完善代码，1.1.8修改了上滑加载数据的策略，体验更好
+> * 2018.7.3     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.2.0 </br>
+完善代码，修改了上滑加载数据的策略，体验更好
 
 > * 2018.6.28     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.1.8 beta3 </br>
 修改空布局的添加方式，完善相关代码
