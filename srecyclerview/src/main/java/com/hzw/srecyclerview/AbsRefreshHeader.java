@@ -100,23 +100,30 @@ public abstract class AbsRefreshHeader extends LinearLayout {
         if (animator != null && animator.isRunning()) return;
         int start, end;
         //需要高度动画的状态有：PREPARE_REFRESH，PREPARE_NORMAL，REFRESH
-        if (currentState == REFRESH) {
-            //刷新结束变为正常
-            start = currentHeight;
-            end = 0;
-        } else if (currentState == PREPARE_NORMAL) {
-            //在低于刷新高度的位置松开拖动，准备回归初始状态
-            start = currentHeight;
-            end = 0;
-        } else if (currentState == PREPARE_REFRESH) {
-            //在高于刷新高度的位置松开拖动，准备开始刷新
-            start = currentHeight;
-            end = refreshHeight;
-        } else if (currentState == NORMAL) {
-            //代码调用开始刷新，准备开始刷新
-            start = 0;
-            end = refreshHeight;
-        } else return;
+        switch (currentState) {
+            case REFRESH:
+                //刷新结束变为正常
+                start = currentHeight;
+                end = 0;
+                break;
+            case PREPARE_NORMAL:
+                //在低于刷新高度的位置松开拖动，准备回归初始状态
+                start = currentHeight;
+                end = 0;
+                break;
+            case PREPARE_REFRESH:
+                //在高于刷新高度的位置松开拖动，准备开始刷新
+                start = currentHeight;
+                end = refreshHeight;
+                break;
+            case NORMAL:
+                //代码调用开始刷新，准备开始刷新
+                start = 0;
+                end = refreshHeight;
+                break;
+            default:
+                return;
+        }
         if (animator == null) {
             animator = ValueAnimator.ofInt(start, end);
             animator.setDuration(duration).setInterpolator(new DecelerateInterpolator());
@@ -208,7 +215,7 @@ public abstract class AbsRefreshHeader extends LinearLayout {
         postDelayed(runnable, delay);
     }
 
-    private Runnable runnable = new Runnable() {
+    private final Runnable runnable = new Runnable() {
         @Override
         public void run() {
             currentState = NORMAL;

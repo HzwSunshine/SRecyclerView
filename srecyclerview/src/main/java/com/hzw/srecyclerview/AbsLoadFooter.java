@@ -19,7 +19,7 @@ public abstract class AbsLoadFooter extends LinearLayout {
     /**
      * 加载开始
      */
-    protected final static int LOAD_BEGAIN = 1;
+    protected final static int LOAD_BEGIN = 1;
     /**
      * 加载无更多数据
      */
@@ -54,7 +54,7 @@ public abstract class AbsLoadFooter extends LinearLayout {
         if (getVisibility() == GONE){
             setVisibility(VISIBLE);
         }
-        loadingState(LOAD_BEGAIN);
+        loadingState(LOAD_BEGIN);
     }
 
     final void loadSuccess() {

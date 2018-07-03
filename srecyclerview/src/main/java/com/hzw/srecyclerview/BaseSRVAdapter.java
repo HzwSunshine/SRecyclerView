@@ -15,8 +15,9 @@ public abstract class BaseSRVAdapter<T> extends RecyclerView.Adapter<SRVHolder> 
 
     public static final int TYPE_NORMAL = 0;
     public static final int TYPE_SECTION = 1;
-    private int itemLayoutId, sectionLayoutId;
-    private List<T> mList;
+    private final int itemLayoutId;
+    private int sectionLayoutId;
+    private final List<T> mList;
 
 
     /*-------------------------------常用构造器---------------------------------begin-------------*/

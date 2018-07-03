@@ -35,8 +35,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     private SRVDivider divider;
     private View emptyView;
 
-    private SparseArray<View> headers = new SparseArray<>();
-    private SparseArray<View> footers = new SparseArray<>();
+    private final SparseArray<View> headers = new SparseArray<>();
+    private final SparseArray<View> footers = new SparseArray<>();
     private int HEADER_TYPE = 1314521;
     private int FOOTER_TYPE = HEADER_TYPE * 10;
 
@@ -150,7 +150,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         isAppBarExpand = verticalOffset == 0;
     }
 
-    private AdapterDataObserver mObserver = new AdapterDataObserver() {
+    private final AdapterDataObserver mObserver = new AdapterDataObserver() {
         @Override public void onChanged() {
             wrapperAdapter.notifyDataSetChanged();
             checkEmpty();
@@ -187,7 +187,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     private void checkEmpty() {
         if (emptyView != null && wrapperAdapter != null) {
             boolean isCurrentEmpty = (boolean) emptyView.getTag();
-            if (wrapperAdapter.isEmpty() && !isCurrentEmpty) {
+            if (wrapperAdapter.isEmpty()) {
                 wrapperAdapter.showEmptyView(true);
                 emptyView.setTag(true);//empty
             } else if (isCurrentEmpty) {
@@ -310,10 +310,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         wrapperAdapter.setRefreshHeader(refreshHeader);
         refreshHeader.setRefreshListener(new AbsRefreshHeader.RefreshListener() {
             @Override public void refresh() {
-                if (loadListener != null) {
-                    if (emptyView != null) emptyView.setTag(false);//no empty
-                    loadListener.refresh();
-                }
+                if (loadListener != null) loadListener.refresh();
             }
         });
     }
@@ -500,8 +497,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     private class WrapperAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private final int REFRESH_HEADER = 1314520;
         private final int LOAD_FOOTER = HEADER_TYPE + FOOTER_TYPE;
-        private ClickListener listener;
-        private Adapter adapter;
+        private final ClickListener listener;
+        private final Adapter adapter;
 
         WrapperAdapter(Adapter adapter) {
             this.adapter = adapter;
@@ -687,9 +684,9 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
      */
     private class SRVDivider extends RecyclerView.ItemDecoration {
 
-        private int mOrientation = LinearLayoutManager.VERTICAL;
+        private int mOrientation;
         private float dividerHeight, leftMargin, rightMargin;
-        private Paint mPaint;
+        private final Paint mPaint;
 
         SRVDivider(int orientation) {
             mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);

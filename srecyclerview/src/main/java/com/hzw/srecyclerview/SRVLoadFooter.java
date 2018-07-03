@@ -51,7 +51,7 @@ class SRVLoadFooter extends AbsLoadFooter {
                 noMore.setVisibility(VISIBLE);
                 error.setVisibility(GONE);
                 break;
-            case LOAD_BEGAIN:
+            case LOAD_BEGIN:
                 load.setVisibility(VISIBLE);
                 noMore.setVisibility(GONE);
                 error.setVisibility(GONE);

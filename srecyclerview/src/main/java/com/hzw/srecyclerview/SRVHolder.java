@@ -12,8 +12,8 @@ import android.widget.TextView;
  * Created by 何志伟 on 2017/7/17.
  */
 public class SRVHolder extends RecyclerView.ViewHolder {
-    private SparseArray<View> views;
-    private View itemView;
+    private final SparseArray<View> views;
+    private final View itemView;
 
     private SRVHolder(View itemView) {
         super(itemView);

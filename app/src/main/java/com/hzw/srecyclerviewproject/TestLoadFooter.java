@@ -56,7 +56,7 @@ public class TestLoadFooter extends AbsLoadFooter {
                 params.height = 0;
                 setLayoutParams(params);
                 break;
-            case LOAD_BEGAIN:
+            case LOAD_BEGIN:
                 load.setVisibility(VISIBLE);
                 noMore.setVisibility(GONE);
                 break;
