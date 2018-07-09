@@ -31,19 +31,19 @@ public abstract class AbsEmptyView extends FrameLayout {
         init();
     }
 
-    final public void emptyRefresh(boolean isAnim) {
+    final public void emptyRetry(boolean isAnim) {
         if (listener != null) {
-            listener.emptyRefresh(isAnim);
+            listener.emptyRetry(isAnim);
         }
     }
 
-    interface EmptyRefreshListener {
-        void emptyRefresh(boolean isAnim);
+    interface EmptyRetryListener {
+        void emptyRetry(boolean isAnim);
     }
 
-    private EmptyRefreshListener listener;
+    private EmptyRetryListener listener;
 
-    final void setEmptyRefreshListener(EmptyRefreshListener listener) {
+    final void setEmptyRetryListener(EmptyRetryListener listener) {
         this.listener = listener;
     }
 

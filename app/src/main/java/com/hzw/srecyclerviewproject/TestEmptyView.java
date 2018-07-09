@@ -35,7 +35,7 @@ public class TestEmptyView extends AbsEmptyView {
         view.findViewById(R.id.empty_click)
                 .setOnClickListener(new OnClickListener() {
                     @Override public void onClick(View v) {
-                        emptyRefresh(true);
+                        emptyRetry(true);
                     }
                 });
     }

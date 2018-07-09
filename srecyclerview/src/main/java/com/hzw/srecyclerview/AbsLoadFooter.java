@@ -51,7 +51,7 @@ public abstract class AbsLoadFooter extends LinearLayout {
     }
 
     final void loadBegin() {
-        if (getVisibility() == GONE){
+        if (getVisibility() == GONE) {
             setVisibility(VISIBLE);
         }
         loadingState(LOAD_BEGIN);
@@ -94,5 +94,25 @@ public abstract class AbsLoadFooter extends LinearLayout {
      * @param state 状态
      */
     public abstract void loadingState(int state);
+
+
+    /**
+     * 错误重试
+     */
+    final public void errorRetry() {
+        if (listener != null) {
+            listener.errorRetry();
+        }
+    }
+
+    interface ErrorRetryListener {
+        void errorRetry();
+    }
+
+    private ErrorRetryListener listener;
+
+    final void setErrorRetryListener(ErrorRetryListener listener) {
+        this.listener = listener;
+    }
 
 }

@@ -19,6 +19,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import java.util.List;
 
 /**
  * 功能：刷新与加载更多
@@ -32,6 +33,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     private AbsLoadFooter loadingFooter;
     private SRecyclerViewModule config;
     private LoadListener loadListener;
+    private AppBarLayout appBarLayout;
     private SRVDivider divider;
     private View emptyView;
 
@@ -127,7 +129,6 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         }
         if (parent == null) return;
         CoordinatorLayout layout = (CoordinatorLayout) parent;
-        AppBarLayout appBarLayout = null;
         for (int i = 0; i < layout.getChildCount(); i++) {
             View child = layout.getChildAt(i);
             if (child instanceof AppBarLayout) {
@@ -142,6 +143,13 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
     @Override protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        clearOnScrollListeners();
+        if (getAdapter() != null && mObserver != null) {
+            getAdapter().unregisterAdapterDataObserver(mObserver);
+        }
+        if (appBarLayout != null) {
+            appBarLayout.removeOnOffsetChangedListener(this);
+        }
         if (refreshHeader != null) refreshHeader.srvDetachedFromWindow();
         if (loadingFooter != null) loadingFooter.srvDetachedFromWindow();
     }
@@ -180,20 +188,13 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         }
 
         private int getOffset() {
-            return refreshHeader == null ? 0 : 1;
+            return wrapperAdapter.getOnlyHeaderCount();
         }
     };
 
     private void checkEmpty() {
-        if (emptyView != null && wrapperAdapter != null && emptyView.getTag() instanceof Boolean) {
-            boolean isCurrentEmpty = (boolean) emptyView.getTag();
-            if (wrapperAdapter.isEmpty()) {
-                wrapperAdapter.showEmptyView(true);
-                emptyView.setTag(true);//empty
-            } else if (isCurrentEmpty) {
-                wrapperAdapter.showEmptyView(false);
-                emptyView.setTag(false);//no empty
-            }
+        if (emptyView != null && wrapperAdapter != null) {
+            wrapperAdapter.updateEmptyState(wrapperAdapter.isEmpty());
         }
     }
 
@@ -204,9 +205,9 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
     public void setEmptyView(View view) {
         emptyView = view;
-        if (emptyView != null) emptyView.setTag(false);//no empty
-        if (wrapperAdapter != null) {
-            mObserver.onChanged();
+        if (emptyView != null) {
+            emptyView.setTag(false);//no empty
+            checkEmpty();
         }
     }
 
@@ -221,8 +222,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         if (config == null && loadListener != null && isInitLoad()) {
             initRefresh();
             initLoading();
+            checkEmpty();
         }
-        mObserver.onChanged();
     }
 
     @Override public Adapter getAdapter() {
@@ -328,8 +329,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             if (emptyView == null) emptyView = config.getEmptyView(getContext());
             if (emptyView != null) emptyView.setTag(false);//no empty
             if (emptyView != null && emptyView instanceof AbsEmptyView) {
-                ((AbsEmptyView) emptyView).setEmptyRefreshListener(new AbsEmptyView.EmptyRefreshListener() {
-                    @Override public void emptyRefresh(boolean isAnim) {
+                ((AbsEmptyView) emptyView).setEmptyRetryListener(new AbsEmptyView.EmptyRetryListener() {
+                    @Override public void emptyRetry(boolean isAnim) {
                         startRefresh(isAnim);
                     }
                 });
@@ -352,12 +353,14 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         headers.put(HEADER_TYPE++, view);
         if (wrapperAdapter != null) {
             wrapperAdapter.notifyAddHeader();
+            checkEmpty();
         }
     }
 
     public void removeHeader(View view) {
         if (wrapperAdapter != null) {
             wrapperAdapter.removeHeader(view);
+            checkEmpty();
         }
     }
 
@@ -366,7 +369,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             isLoading = false;
             refreshHeader.refreshComplete();
             loadingFooter.reset();
-            loadingFooter.setTag(false);//no isScroll
+            loadingFooter.setTag(false);//no scroll
         }
     }
 
@@ -394,31 +397,27 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             loadingFooter = new SRVLoadFooter(getContext());
         }
         loadingFooter.initFooter();
-        wrapperAdapter.setLoadFooter(loadingFooter);
+        wrapperAdapter.loadingEnable(isLoadingEnable);
         if (!isLoadingEnable) loadingFooter.setVisibility(GONE);
         //刷新和加载只支持垂直方向的LinearLayoutManager和GridLayoutManager布局
-        loadingFooter.setTag(false);
+        loadingFooter.setTag(false);//no scroll
+        loadingFooter.setErrorRetryListener(new AbsLoadFooter.ErrorRetryListener() {
+            @Override public void errorRetry() {
+                judgeLastItem();
+            }
+        });
         addOnScrollListener(new OnScrollListener() {
             @Override public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 boolean isScroll = (boolean) loadingFooter.getTag();
                 if (!isScroll && newState == SCROLL_STATE_IDLE && isLoadingEnable && isPullUp) {
-                    LinearLayoutManager manager = (LinearLayoutManager) getLayoutManager();
-                    int lastPosition = manager.findLastVisibleItemPosition();
-                    ViewHolder holder = recyclerView.findViewHolderForLayoutPosition(lastPosition);
-                    if (holder == null) return;
-                    int offset = holder.itemView instanceof AbsLoadFooter ? 0 : (int) dividerHeight;
-                    int rvBottom = recyclerView.getBottom() - recyclerView.getTop() - offset;
-                    if (rvBottom - holder.itemView.getBottom() > 0) {//item未填充满RecyclerView
-                        judgeLastItem(lastPosition);
-                    }
+                    judgeLastItem();
                 }
             }
 
             @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (dy > 0 && isLoadingEnable) {
-                    loadingFooter.setTag(true);
-                    LinearLayoutManager manager = (LinearLayoutManager) getLayoutManager();
-                    judgeLastItem(manager.findLastVisibleItemPosition());
+                    loadingFooter.setTag(true);//current scroll
+                    judgeLastItem();
                 }
             }
         });
@@ -427,7 +426,9 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     /**
      * 判断是否开始加载更多，只有滑动到最后一个Item，并且当前有数据时，才会加载更多
      */
-    private void judgeLastItem(int last) {
+    private void judgeLastItem() {
+        LinearLayoutManager manager = (LinearLayoutManager) getLayoutManager();
+        int last = manager.findLastVisibleItemPosition();
         if (!isLoading && last > 1 && last == (wrapperAdapter.getItemCount() - 1)) {
             isLoading = true;
             loadingFooter.loadBegin();
@@ -449,12 +450,14 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         footers.put(FOOTER_TYPE++, view);
         if (wrapperAdapter != null) {
             wrapperAdapter.notifyAddFooter();
+            if (view != emptyView) checkEmpty();
         }
     }
 
     public void removeFooter(View view) {
         if (wrapperAdapter != null) {
             wrapperAdapter.removeFooter(view);
+            if (view != emptyView) checkEmpty();
         }
     }
 
@@ -467,6 +470,9 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
     public void setLoadingEnable(boolean enable) {
         isLoadingEnable = enable;
+        if (wrapperAdapter != null) {
+            wrapperAdapter.loadingEnable(enable);
+        }
         if (!enable && getAdapter() != null && loadListener != null) {
             loadingComplete();
         }
@@ -501,12 +507,12 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         private final ClickListener listener;
         private final Adapter adapter;
 
-        WrapperAdapter(Adapter adapter) {
+        private WrapperAdapter(Adapter adapter) {
             this.adapter = adapter;
             listener = new ClickListener();
         }
 
-        Adapter getAdapter() {
+        private Adapter getAdapter() {
             return adapter;
         }
 
@@ -514,16 +520,16 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             return position < getHeaderCount();
         }
 
-        void notifyAddHeader() {
-            notifyItemInserted(getHeaderCount() - 1);
+        private void notifyAddHeader() {
+            notifyItemInserted(getOnlyHeaderCount());
         }
 
-        void setRefreshHeader(View view) {
+        private void setRefreshHeader(View view) {
             headers.put(REFRESH_HEADER, view);
-            notifyDataSetChanged();
+            notifyItemInserted(0);
         }
 
-        void removeHeader(View view) {
+        private void removeHeader(View view) {
             if (view == null) return;
             for (int i = 0; i < getHeaderCount(); i++) {
                 if (view == headers.valueAt(i)) {
@@ -538,20 +544,20 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             return position >= (getDataCount() + getHeaderCount());
         }
 
-        void notifyAddFooter() {
+        private void notifyAddFooter() {
             int insertPosition = getHeaderCount() + getDataCount() + getFooterCount();
             //如果有加载尾部，则在尾部之前插入Item，保证加载尾部是最后一个Item
-            if (footers.get(LOAD_FOOTER) != null) insertPosition -= 1;
+            if (loadingFooter != null) insertPosition -= 1;
             notifyItemInserted(insertPosition);
         }
 
-        void setLoadFooter(View view) {
+        private void setLoadFooter(View view) {
             footers.put(LOAD_FOOTER, view);
             int insertPosition = getHeaderCount() + getDataCount() + getFooterCount();
             notifyItemInserted(insertPosition);
         }
 
-        void removeFooter(View view) {
+        private void removeFooter(View view) {
             if (view == null) return;
             for (int i = 0; i < getFooterCount(); i++) {
                 if (view == footers.valueAt(i)) {
@@ -562,13 +568,33 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             }
         }
 
-        void showEmptyView(boolean isShow) {
-            if (isShow) {
-                removeFooter(loadingFooter);
-                addFooter(emptyView);
+        private void loadingEnable(boolean enable) {
+            if (enable) {
+                if (footers.get(LOAD_FOOTER) == null) {
+                    setLoadFooter(loadingFooter);
+                }
             } else {
-                removeFooter(emptyView);
-                setLoadFooter(loadingFooter);
+                if (footers.get(LOAD_FOOTER) != null) {
+                    removeHeader(loadingFooter);
+                }
+            }
+        }
+
+        private void updateEmptyState(boolean isShow) {
+            Object tag = emptyView.getTag();
+            boolean isCurrentEmpty = tag instanceof Boolean && (boolean) tag;
+            if (isShow) {
+                if (!isCurrentEmpty) {
+                    if (isLoadingEnable) removeFooter(loadingFooter);
+                    addFooter(emptyView);
+                    emptyView.setTag(true);//empty
+                }
+            } else {
+                if (isCurrentEmpty) {
+                    removeFooter(emptyView);
+                    if (isLoadingEnable) setLoadFooter(loadingFooter);
+                    emptyView.setTag(false);//no empty
+                }
             }
         }
 
@@ -581,12 +607,25 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             return adapter.onCreateViewHolder(parent, viewType);
         }
 
-        @SuppressWarnings("unchecked") @Override public void onBindViewHolder(ViewHolder holder, int position) {
+        @Override public void onBindViewHolder(ViewHolder holder, int position) {
+            srvBindViewHolder(holder, position, null);
+        }
+
+        @SuppressWarnings("unchecked")
+        private void srvBindViewHolder(ViewHolder holder, int position, List<Object> payloads) {
             if (isHeader(position) || isFooter(position)) return;
             position -= getHeaderCount();
             holder.itemView.setTag(R.id.srv_item_click, position);
             holder.itemView.setOnClickListener(listener);
-            adapter.onBindViewHolder(holder, position);
+            if (payloads == null) {
+                adapter.onBindViewHolder(holder, position);
+            } else {
+                adapter.onBindViewHolder(holder, position, payloads);
+            }
+        }
+
+        @Override public void onBindViewHolder(ViewHolder holder, int position, List<Object> payloads) {
+            srvBindViewHolder(holder, position, payloads);
         }
 
         @Override public int getItemViewType(int position) {
@@ -614,11 +653,19 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             return adapter.getItemCount();
         }
 
-        private boolean isEmpty() {
-            return getDataCount() == 0;
+        private int getOnlyHeaderCount() {
+            return getHeaderCount() - (refreshHeader == null ? 0 : 1);
         }
 
-        class Holder extends ViewHolder {
+        private int getOnlyFooterCount() {
+            return getFooterCount() - (loadingFooter == null ? 0 : 1);
+        }
+
+        private boolean isEmpty() {
+            return (getDataCount() + getOnlyHeaderCount() + getOnlyFooterCount()) == 0;
+        }
+
+        private class Holder extends ViewHolder {
             Holder(View itemView) {
                 super(itemView);
             }
@@ -685,11 +732,11 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
      */
     private class SRVDivider extends RecyclerView.ItemDecoration {
 
-        private int mOrientation;
         private float dividerHeight, leftMargin, rightMargin;
+        private final int mOrientation;
         private final Paint mPaint;
 
-        SRVDivider(int orientation) {
+        private SRVDivider(int orientation) {
             mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             mPaint.setStyle(Paint.Style.FILL);
             this.mOrientation = orientation;
@@ -703,14 +750,14 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
          * @param leftMargin 分割线距离左边的距离
          * @param rightMargin 分割线距离右边的距离
          */
-        void initVerticalDivider(float height, int color, float leftMargin, float rightMargin) {
+        private void initVerticalDivider(float height, int color, float leftMargin, float rightMargin) {
             this.dividerHeight = height;
             this.leftMargin = leftMargin;
             this.rightMargin = rightMargin;
             mPaint.setColor(color);
         }
 
-        void initHorizontalDivider(float height, int color) {
+        private void initHorizontalDivider(float height, int color) {
             this.dividerHeight = height;
             mPaint.setColor(color);
         }

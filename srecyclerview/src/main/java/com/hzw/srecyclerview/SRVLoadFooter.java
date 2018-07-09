@@ -11,7 +11,7 @@ import android.view.View;
  */
 class SRVLoadFooter extends AbsLoadFooter {
 
-    private View load, noMore,error;
+    private View load, noMore, error;
 
     public SRVLoadFooter(Context context) {
         super(context);
@@ -31,6 +31,11 @@ class SRVLoadFooter extends AbsLoadFooter {
         noMore = view.findViewById(R.id.tv_src_loadNoMore);
         load = view.findViewById(R.id.v_srv_loading);
         error = view.findViewById(R.id.tv_src_loadError);
+        error.setOnClickListener(new OnClickListener() {
+            @Override public void onClick(View v) {
+                errorRetry();
+            }
+        });
         addView(view);
     }
 
