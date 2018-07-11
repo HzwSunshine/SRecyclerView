@@ -3,6 +3,7 @@
     package="com.hzw.srecyclerviewproject">
 
     <application
+        android:name=".SRVApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -11,16 +12,16 @@
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
         <!-- 在此可配置全局的SRV -->
-         <meta-data
-         android:name="com.hzw.srecyclerviewproject.TestSRVModule"
-         android:value="SRecyclerViewModule" />
+        <meta-data
+            android:name="com.hzw.srecyclerviewproject.TestSRVModule"
+            android:value="SRecyclerViewModule"/>
 
         <activity android:name=".TestActivity"></activity>
     </application>

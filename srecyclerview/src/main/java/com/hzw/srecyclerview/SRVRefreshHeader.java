@@ -31,25 +31,29 @@ class SRVRefreshHeader extends AbsRefreshHeader {
         super(context, attrs, defStyleAttr);
     }
 
-    @Override
-    public void init() {
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.srv_refresh_header, this, false);
+    @Override public void init() {
+        View view = LayoutInflater.from(getContext())
+                .inflate(R.layout.srv_refresh_header, this, false);
         tips = view.findViewById(R.id.tv_src_refreshTips);
         progress = view.findViewById(R.id.pb_srv_refreshProgress);
         icon = view.findViewById(R.id.img_srv_refreshIcon);
         addView(view);
-        upAnim = new RotateAnimation(180, 360, Animation.RELATIVE_TO_SELF,
-                0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        downAnim = new RotateAnimation(0, 180, Animation.RELATIVE_TO_SELF,
-                0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        upAnim = new RotateAnimation(180, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        downAnim = new RotateAnimation(0, 180, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         upAnim.setDuration(200);
         upAnim.setFillAfter(true);
         downAnim.setDuration(200);
         downAnim.setFillAfter(true);
     }
 
-    @Override
-    public void refresh(int state, int height) {
+    @Override public void srvDetachedFromWindow() {
+        super.srvDetachedFromWindow();
+        if (upAnim != null) upAnim.cancel();
+        if (downAnim != null) downAnim.cancel();
+        if (icon != null) icon.clearAnimation();
+    }
+
+    @Override public void refresh(int state, int height) {
         switch (state) {
             case NORMAL:
                 progress.setVisibility(GONE);
@@ -75,6 +79,5 @@ class SRVRefreshHeader extends AbsRefreshHeader {
                 break;
         }
     }
-
 
 }
