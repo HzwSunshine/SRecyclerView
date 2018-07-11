@@ -12,24 +12,24 @@ class SRVConfig {
 
     private static final String SRV_CONFIG_VALUE = "SRecyclerViewModule";
     private volatile static SRVConfig instance;
-    private static SRecyclerViewModule module;
+    private SRecyclerViewModule module;
 
-    private SRVConfig() {
+    private SRVConfig(Context context) {
+        initConfig(context);
     }
 
     static SRVConfig getInstance(Context context) {
         if (instance == null) {
             synchronized (SRVConfig.class) {
                 if (instance == null) {
-                    instance = new SRVConfig();
-                    initConfig(context.getApplicationContext());
+                    instance = new SRVConfig(context.getApplicationContext());
                 }
             }
         }
         return instance;
     }
 
-    private static void initConfig(Context context) {
+    private void initConfig(Context context) {
         String moduleName = null;
         try {
             ApplicationInfo appInfo = context.getPackageManager()
@@ -42,12 +42,11 @@ class SRVConfig {
                     }
                 }
             }
-        } catch (Exception ignored) {
+        } catch (PackageManager.NameNotFoundException ignored) {
         }
-        Class moduleClass;
         if (moduleName != null) {
             try {
-                moduleClass = Class.forName(moduleName);
+                Class moduleClass = Class.forName(moduleName);
                 Object cls = moduleClass.newInstance();
                 if (cls instanceof SRecyclerViewModule) {
                     module = (SRecyclerViewModule) cls;

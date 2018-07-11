@@ -398,7 +398,6 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         }
         loadingFooter.initFooter();
         wrapperAdapter.loadingEnable(isLoadingEnable);
-        if (!isLoadingEnable) loadingFooter.setVisibility(GONE);
         //刷新和加载只支持垂直方向的LinearLayoutManager和GridLayoutManager布局
         loadingFooter.setTag(false);//no scroll
         loadingFooter.setErrorRetryListener(new AbsLoadFooter.ErrorRetryListener() {
