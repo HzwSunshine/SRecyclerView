@@ -30,12 +30,12 @@
 ###  Download
 **Use Gradle**:&nbsp;&nbsp;&nbsp;&nbsp;
 
-     compile 'com.github.hzw:srecyclerview:1.2.1'
+     compile 'com.github.hzw:srecyclerview:1.2.2'
 
 
 *SRecyclerView中使用了com.android.support:design:26.1.0，如果需要使用你项目中的版本，可用以下方式：*
 
-    compile ("com.github.hzw:srecyclerview:1.2.1"){ exclude group:'com.android.support' }
+    compile ("com.github.hzw:srecyclerview:1.2.2"){ exclude group:'com.android.support' }
 
 
 
@@ -44,6 +44,9 @@
 
 
 # Update History
+
+> * 2018.7.11     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.2.2 </br>
+完善代码
 
 > * 2018.7.9     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.2.1 </br>
 完善代码，修复bug
