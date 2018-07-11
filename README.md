@@ -2,18 +2,27 @@
 有刷新和加载功能的RecyclerView</br>
 博客地址：http://blog.csdn.net/hzwailll/article/details/75285924
 
-主要功能有：
-1. 下拉刷新，滑到底部加载（也支持GridGridLayoutManager）
-2. 支持添加多个头部和尾部（也支持GridGridLayoutManager）
-3. 支持代码设置一个刷新头部和加载尾部（满足局部特殊的刷新头部和加载尾部）
-4. 支持自定义刷新头部和加载尾部，手势等逻辑已处理，你只需写刷新界面逻辑即可
-5. 可以全局配置刷新头部，加载尾部以及空布局（EmptyView）
-6. 支持设置LinearLayoutManager的分割线，以及纵向时分割线的左右距离
-7. 支持代码设置一个EmptyView
-8. 支持Item的点击事件
-9. 附带一个简易的适配器，大大减少适配器的代码
-10. 默认设置为纵向的LinearLayoutManager
-11. 支持数据不满一屏时的上滑加载
+#### 主要功能有：
+1. 下拉刷新，滑到底部加载（暂不支持StaggeredGridLayoutManager流式布局）
+2. 支持添加多个头部和尾部
+3. 支持自定义刷新头部和加载尾部
+4. 支持全局配置刷新头部，加载尾部以及空布局（EmptyView），待支持配置全局错误布局
+5. 支持代码设置刷新头部，加载尾部以及空布局（EmptyView）（满足局部特殊布局要求）
+6. 支持空布局（EmptyView）显示时的下拉刷新，及空布局的点击刷新重试
+7. 支持加载尾部的无数据和加载错误的显示及加载错误时的点击加载重试
+8. 支持设置LinearLayoutManager的分割线，以及纵向时分割线的左右距离
+9. 支持数据不满一屏时的上滑加载
+10. 支持列表Item的点击事件
+11. 附带一个简易的适配器，大大减少适配器的代码
+12. 附带的简易适配器，可用于SRecyclerView，也可用于普通RecyclerView
+13. 默认已设置为纵向（VERTICAL）的LinearLayoutManager，请勿重复设置
+
+#### 不支持：
+1. 不支持StaggeredGridLayoutManager流式布局的刷新和加载
+2. 不支持横向布局的刷新和加载
+3. 不支持滑动到底部时，上拉一段距离才触发加载功能的方式
+4. 不支持类似于ListView式的空布局加载方式，空布局需要为一个单独布局
+
 
 ![image](https://github.com/HzwSunshine/SRecyclerView/blob/master/srecyclerview.gif)
 
@@ -32,8 +41,6 @@
 
 # ProGuard
 -keep public class * implements com.hzw.srecyclerview.SRecyclerViewModule
-
-
 
 
 # Update History
