@@ -82,7 +82,7 @@
         ---* 以上是对全局配置的示例，当然你也可以不用做任何配置，如果默认的样式能满足你的情况的话 *---
 
         //为了满足某个列表有特殊的刷新头部和加载尾部，以及空布局的情况，可以在代码中设置
-        //---需要注意的是，需要再setAdapter方法之前设置才有效---
+        //---setRefreshHeader方法和setLoadingFooter方法需要再setAdapter方法之前设置才有效---
         recyclerView.setRefreshHeader(new TestRefreshHeader(this));
         recyclerView.setLoadingFooter(new TestLoadFooter(this));
         //代码中设置一个EmptyView
