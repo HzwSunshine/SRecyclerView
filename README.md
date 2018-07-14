@@ -3,11 +3,11 @@
 博客地址：http://blog.csdn.net/hzwailll/article/details/75285924
 
 #### 主要功能有：
-1. 下拉刷新，滑到底部加载（暂不支持StaggeredGridLayoutManager流式布局）
+1. 下拉刷新，滑到底部加载
 2. 支持添加多个头部和尾部
 3. 支持自定义刷新头部和加载尾部
 4. 支持全局配置刷新头部，加载尾部以及空布局（EmptyView），待支持配置全局错误布局
-5. 支持代码设置刷新头部，加载尾部以及空布局（EmptyView）（满足局部特殊布局要求）
+5. 支持代码设置刷新头部，加载尾部以及空布局（EmptyView）（满足某个列表的特殊要求）
 6. 支持空布局（EmptyView）显示时的下拉刷新，及空布局的点击刷新重试
 7. 支持加载尾部的无数据和加载错误的显示及加载错误时的点击加载重试
 8. 支持设置LinearLayoutManager的分割线，以及纵向时分割线的左右距离
@@ -21,13 +21,13 @@
 1. 不支持StaggeredGridLayoutManager流式布局的刷新和加载
 2. 不支持横向布局的刷新和加载
 3. 不支持滑动到底部时，上拉一段距离才触发加载功能的方式
-4. 不支持类似于ListView式的空布局加载方式，空布局需要为一个单独布局
+4. 不支持类似于ListView式的空布局设置方式，空布局需要为一个单独布局
 
 
 ![image](https://github.com/HzwSunshine/SRecyclerView/blob/master/srecyclerview.gif)
 
 
-###  Download
+##  Gradle
 **Use Gradle**:&nbsp;&nbsp;&nbsp;&nbsp;
 
      compile 'com.github.hzw:srecyclerview:1.2.2'
@@ -39,11 +39,115 @@
 
 
 
-# ProGuard
+## 混淆ProGuard
 -keep public class * implements com.hzw.srecyclerview.SRecyclerViewModule
 
 
-# Update History
+## 使用
+**xml**
+
+```
+    <com.hzw.srecyclerview.SRecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:dividerColor="#BEBEBE"
+        app:dividerHeight="0.8dp"
+        app:dividerLeftMargin="10dp"
+        app:dividerRightMargin="0dp">
+    </com.hzw.srecyclerview.SRecyclerView>
+```
+**全局配置**
+
+```
+        //SRecyclerView的刷新头部和加载尾部的全局配置需要新建一个类，并实现SRecyclerViewModule接口
+        public class TestSRVModule implements SRecyclerViewModule {
+            @Override
+            public AbsRefreshHeader getRefreshHeader(Context context) {
+                //也可以不配置，返回null，使用默认的加载UI
+                return new TestRefreshHeader(context);
+                //return null;
+            }
+            //对应的还有全局加载尾部和空布局的配置
+            ...
+        }
+        //并在AndroidManifest.xml中添加meta-data，
+        //对SRV进行全局配置，name为实现类的路径，value必须为接口名称： "SRecyclerViewModule"
+        <meta-data
+            android:name="com.hzw.srecyclerviewproject.TestSRVModule"
+            android:value="SRecyclerViewModule" />
+
+        //示例自定义刷新头部，相应的自定义加载尾部和自定义空布局都一样，只需要继承对应的抽象类
+        具体自定义的步骤请参考demo，很简单就不贴代码了，占地方 ^v^
+
+        ---* 以上是对全局配置的示例，当然你也可以不用做任何配置，如果默认的样式能满足你的情况的话 *---
+
+        //为了满足某个列表有特殊的刷新头部和加载尾部，以及空布局的情况，可以在代码中设置
+        //---需要注意的是，需要再setAdapter方法之前设置才有效---
+        recyclerView.setRefreshHeader(new TestRefreshHeader(this));
+        recyclerView.setLoadingFooter(new TestLoadFooter(this));
+        //代码中设置一个EmptyView
+        recyclerView.setEmptyView(emptyView);
+```
+
+
+
+**code**
+
+```
+        //如果设置了加载监听，就是需要刷新加载功能，如果没有设置加载监听，那么就没有下拉与底部加载
+        recyclerView.setLoadListener(new SRecyclerView.LoadListener() {
+            @Override
+            public void refresh() {
+            }
+
+            @Override
+            public void loading() {
+            }
+        });
+
+        //item的点击事件
+        recyclerView.setItemClickListener(new SRecyclerView.ItemClickListener() {
+            @Override
+            public void click(View v, int position) {
+            }
+        });
+
+        //可以在xml中配置分割线，也可以在代码中设置分割线
+        recyclerView.setDivider(Color.LTGRAY, 3, 30, 0);
+
+        //可以添加一个或多个尾部和头部
+        recyclerView.addHeader(header);
+        recyclerView.removeHeader(header);
+        recyclerView.addFooter(footer);
+        recyclerView.removeFooter(footer);
+
+        //刷新完成
+        recyclerView.refreshComplete();
+
+        //加载更多完成
+        recyclerView.loadingComplete();
+
+        //加载更多没有数据
+        recyclerView.loadNoMoreData();
+
+        //加载更多出现错误
+        recyclerView.loadingError();
+
+        //设置刷新和加载更多是否可用
+        recyclerView.setRefreshEnable(enable);
+        recyclerView.setLoadingEnable(enable);
+
+        //代码的刷新，应该在setAdapter方法之后调用，true表示有刷新动画，false无动画
+        recyclerView.startRefresh(true);
+
+        更多使用方法请参考demo...
+```
+
+
+
+
+
+## Update History
 
 > * 2018.7.11     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.2.2 </br>
 完善代码
