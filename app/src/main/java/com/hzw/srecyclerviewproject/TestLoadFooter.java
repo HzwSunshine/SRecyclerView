@@ -17,7 +17,7 @@ import com.hzw.srecyclerview.AbsLoadFooter;
 
 public class TestLoadFooter extends AbsLoadFooter {
 
-    private View load, noMore;
+    private View load, noMore, error;
 
     public TestLoadFooter(Context context) {
         super(context);
@@ -31,11 +31,17 @@ public class TestLoadFooter extends AbsLoadFooter {
         super(context, attrs, defStyleAttr);
     }
 
-    @Override
-    public void init() {
-        View loadView = LayoutInflater.from(getContext()).inflate(R.layout.srv_load_footer, this, false);
+    @Override public void init() {
+        View loadView = LayoutInflater.from(getContext())
+                .inflate(R.layout.srv_load_footer, this, false);
         noMore = loadView.findViewById(R.id.tv_src_loadNoMore);
         load = loadView.findViewById(R.id.v_srv_loading);
+        error = loadView.findViewById(R.id.tv_src_loadError);
+        error.setOnClickListener(new OnClickListener() {
+            @Override public void onClick(View v) {
+                errorRetry();
+            }
+        });
         addView(loadView);
     }
 
@@ -48,6 +54,7 @@ public class TestLoadFooter extends AbsLoadFooter {
             case LOAD_ERROR:
                 load.setVisibility(GONE);
                 noMore.setVisibility(GONE);
+                error.setVisibility(VISIBLE);
                 break;
             case LOAD_NO_MORE:
                 //据说有一种需求是，没数据时，直接不显示无数据的UI，此时可设置高度为0，
@@ -59,6 +66,7 @@ public class TestLoadFooter extends AbsLoadFooter {
             case LOAD_BEGIN:
                 load.setVisibility(VISIBLE);
                 noMore.setVisibility(GONE);
+                error.setVisibility(GONE);
                 break;
         }
     }
@@ -66,8 +74,7 @@ public class TestLoadFooter extends AbsLoadFooter {
     /**
      * 刷新结束后如果需要重置加载尾部，可重写此方法重置LoadFooter
      */
-    @Override
-    public void reset() {
+    @Override public void reset() {
         super.reset();
         ViewGroup.LayoutParams params = getLayoutParams();
         params.height = dip2px(45);
@@ -75,12 +82,10 @@ public class TestLoadFooter extends AbsLoadFooter {
     }
 
 
-
-
     private int dip2px(float value) {
-        final float scale = Resources.getSystem().getDisplayMetrics().density;
+        final float scale = Resources.getSystem()
+                .getDisplayMetrics().density;
         return (int) (value * scale + 0.5f);
     }
-
 
 }

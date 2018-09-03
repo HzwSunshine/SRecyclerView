@@ -45,8 +45,7 @@ public abstract class AbsRefreshHeader extends LinearLayout {
     }
 
     final void initHeader() {
-        ViewGroup.LayoutParams params = new LinearLayoutCompat.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, 0);
+        ViewGroup.LayoutParams params = new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0);
         setLayoutParams(params);
         //获取子类的配置
         duration = getRefreshDuration();
@@ -126,10 +125,10 @@ public abstract class AbsRefreshHeader extends LinearLayout {
         }
         if (animator == null) {
             animator = ValueAnimator.ofInt(start, end);
-            animator.setDuration(duration).setInterpolator(new DecelerateInterpolator());
+            animator.setDuration(duration)
+                    .setInterpolator(new DecelerateInterpolator());
             animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
+                @Override public void onAnimationUpdate(ValueAnimator animation) {
                     int height = (int) animation.getAnimatedValue();
                     setHeight(height);
                     //高度自动更新的两个状态：刷新结束后的状态，未达到刷新高度而松手的状态
@@ -139,8 +138,7 @@ public abstract class AbsRefreshHeader extends LinearLayout {
                 }
             });
             animator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
+                @Override public void onAnimationEnd(Animator animation) {
                     heightChangeAnimEnd();
                 }
             });
@@ -188,7 +186,9 @@ public abstract class AbsRefreshHeader extends LinearLayout {
             case NORMAL://代码调用自动刷新，当前已开始刷新
                 if (currentHeight < 0) return;
                 currentState = REFRESH;
-                currentHeight = refreshHeight;
+                if (isAnimRefresh) {
+                    currentHeight = refreshHeight;
+                }
                 refresh(REFRESH, refreshHeight);
                 loadListener.refresh();
                 break;
@@ -216,8 +216,7 @@ public abstract class AbsRefreshHeader extends LinearLayout {
     }
 
     private final Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
+        @Override public void run() {
             currentState = NORMAL;
             if (isAnimRefresh) {
                 heightChangeAnim();
@@ -243,7 +242,8 @@ public abstract class AbsRefreshHeader extends LinearLayout {
     }
 
     private int dip2px(float value) {
-        final float scale = Resources.getSystem().getDisplayMetrics().density;
+        final float scale = Resources.getSystem()
+                .getDisplayMetrics().density;
         return (int) (value * scale + 0.5f);
     }
 
@@ -289,24 +289,23 @@ public abstract class AbsRefreshHeader extends LinearLayout {
      * PREPARE_REFRESH:准备刷新的状态，手指移动时当前高度大于刷新高度，此时松开手指，会立刻调用REFRESH状态，
      * ---------------同时高度变为刷新高度
      *
-     * @param state  分别为：NORMAL，REFRESH，PREPARE_NORMAL，PREPARE_REFRESH
+     * @param state 分别为：NORMAL，REFRESH，PREPARE_NORMAL，PREPARE_REFRESH
      * @param height 当前刷新头的高度
      */
-//    switch (state) {
-//        case NORMAL:
-//
-//            break;
-//        case REFRESH:
-//
-//            break;
-//        case PREPARE_NORMAL:
-//
-//            break;
-//        case PREPARE_REFRESH:
-//
-//            break;
-//    }
+    //    switch (state) {
+    //        case NORMAL:
+    //
+    //            break;
+    //        case REFRESH:
+    //
+    //            break;
+    //        case PREPARE_NORMAL:
+    //
+    //            break;
+    //        case PREPARE_REFRESH:
+    //
+    //            break;
+    //    }
     public abstract void refresh(int state, int height);
-
 
 }

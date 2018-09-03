@@ -13,17 +13,17 @@ import android.widget.FrameLayout;
  * time: 2018/2/5 下午5:24
  * description:
  */
-public abstract class AbsEmptyView extends FrameLayout {
+public abstract class AbsStateView extends FrameLayout {
 
-    public AbsEmptyView(@NonNull Context context) {
+    public AbsStateView(@NonNull Context context) {
         this(context, null);
     }
 
-    public AbsEmptyView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public AbsStateView(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public AbsEmptyView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public AbsStateView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         ViewGroup.LayoutParams params = new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                                                             ViewGroup.LayoutParams.MATCH_PARENT);
@@ -31,19 +31,24 @@ public abstract class AbsEmptyView extends FrameLayout {
         init();
     }
 
-    final public void emptyRetry(boolean isAnim) {
+    /**
+     * 状态View的异常时的刷新重新
+     *
+     * @param isAnim 是否有刷新动画
+     */
+    final public void retry(boolean isAnim) {
         if (listener != null) {
-            listener.emptyRetry(isAnim);
+            listener.retry(isAnim);
         }
     }
 
-    interface EmptyRetryListener {
-        void emptyRetry(boolean isAnim);
+    interface RetryListener {
+        void retry(boolean isAnim);
     }
 
-    private EmptyRetryListener listener;
+    private RetryListener listener;
 
-    final void setEmptyRetryListener(EmptyRetryListener listener) {
+    final void setRetryListener(RetryListener listener) {
         this.listener = listener;
     }
 

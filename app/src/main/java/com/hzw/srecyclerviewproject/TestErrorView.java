@@ -14,22 +14,22 @@ import com.hzw.srecyclerview.AbsStateView;
  * description:
  */
 
-public class TestEmptyView extends AbsStateView {
-    public TestEmptyView(@NonNull Context context) {
+public class TestErrorView extends AbsStateView {
+    public TestErrorView(@NonNull Context context) {
         super(context);
     }
 
-    public TestEmptyView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public TestErrorView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public TestEmptyView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public TestErrorView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
     @Override public void init() {
         View view = LayoutInflater.from(getContext())
-                .inflate(R.layout.empty_test, this, true);
+                .inflate(R.layout.error_test, this, true);
 
         //空布局的点击刷新
         view.findViewById(R.id.empty_click)

@@ -2,7 +2,7 @@ package com.hzw.srecyclerviewproject;
 
 import android.content.Context;
 
-import com.hzw.srecyclerview.AbsEmptyView;
+import com.hzw.srecyclerview.AbsStateView;
 import com.hzw.srecyclerview.AbsLoadFooter;
 import com.hzw.srecyclerview.AbsRefreshHeader;
 import com.hzw.srecyclerview.SRecyclerViewModule;
@@ -13,21 +13,30 @@ import com.hzw.srecyclerview.SRecyclerViewModule;
  */
 
 public class TestSRVModule implements SRecyclerViewModule {
-    @Override
-    public AbsRefreshHeader getRefreshHeader(Context context) {
+    @Override public AbsRefreshHeader getRefreshHeader(Context context) {
         return new TestRefreshHeader(context);
     }
 
     /**
      * 也可以只配置其中一项，使用默认的加载UI
      */
-    @Override
-    public AbsLoadFooter getLoadingFooter(Context context) {
+    @Override public AbsLoadFooter getLoadingFooter(Context context) {
         return new TestLoadFooter(context);
     }
 
-    @Override public AbsEmptyView getEmptyView(Context context) {
+    @Override public AbsStateView getEmptyView(Context context) {
         return new TestEmptyView(context);
+        //return null;
+    }
+
+    @Override public AbsStateView getErrorView(Context context) {
+        return new TestErrorView(context);
+        //return null;
+    }
+
+    @Override public AbsStateView getLoadingView(Context context) {
+        return new TestLoadingView(context);
+        //return null;
     }
 
 }

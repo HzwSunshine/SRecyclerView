@@ -36,10 +36,12 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     private AppBarLayout appBarLayout;
     private SRVDivider divider;
     private View emptyView;
+    private View errorView;
+    private View LoadView;
 
     private final SparseArray<View> headers = new SparseArray<>();
     private final SparseArray<View> footers = new SparseArray<>();
-    private int HEADER_TYPE = 1314521;
+    private int HEADER_TYPE = 1314522;
     private int FOOTER_TYPE = HEADER_TYPE * 10;
 
     private boolean isLoadingEnable = true;
@@ -49,13 +51,15 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     private boolean isLoading = false;
     private boolean isPullUp;
 
-    private int currentScrollMode;
-    private int dividerColor;
     private float dividerHeight;
     private float dividerRight;
     private float dividerLeft;
     private float firstY;
     private float lastY;
+
+    private int currentScrollMode;
+    private int currentState;
+    private int dividerColor;
 
 
     public SRecyclerView(Context context) {
@@ -192,12 +196,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         }
     };
 
-    private void checkEmpty() {
-        if (emptyView != null && wrapperAdapter != null) {
-            wrapperAdapter.updateEmptyState(wrapperAdapter.isEmpty());
-        }
-    }
 
+    /*-------------------------------setEmptyView-----------------------------------------start--------*/
     public void setEmptyView(@LayoutRes int layoutId) {
         setEmptyView(LayoutInflater.from(getContext())
                              .inflate(layoutId, this, false));
@@ -206,10 +206,60 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     public void setEmptyView(View view) {
         emptyView = view;
         if (emptyView != null) {
-            emptyView.setTag(false);//no empty
             checkEmpty();
         }
     }
+
+    private void checkEmpty() {
+        if (loadListener != null && wrapperAdapter != null && emptyView != null) {
+            if (wrapperAdapter.isEmpty()) {
+                wrapperAdapter.updateStateView(WrapperAdapter.STATE_EMPTY);
+            } else {
+                wrapperAdapter.updateStateView(WrapperAdapter.STATE_NORMAL);
+            }
+        }
+    }
+    /*-------------------------------setEmptyView-----------------------------------------end--------*/
+
+
+    /*-------------------------------setErrorView-----------------------------------------start--------*/
+    public void setErrorView(@LayoutRes int layoutId) {
+        setErrorView(LayoutInflater.from(getContext())
+                             .inflate(layoutId, this, false));
+    }
+
+    public void setErrorView(View view) {
+        errorView = view;
+        if (errorView != null) {
+            checkError();
+        }
+    }
+
+    private void checkError() {
+        if (wrapperAdapter != null && wrapperAdapter.isEmpty() && errorView != null) {
+            wrapperAdapter.updateStateView(WrapperAdapter.STATE_ERROR);
+        }
+    }
+    /*-------------------------------setErrorView-----------------------------------------end--------*/
+
+
+    /*-------------------------------setLoadingView-----------------------------------------start--------*/
+    public void setLoadingView(@LayoutRes int layoutId) {
+        setLoadingView(LayoutInflater.from(getContext())
+                               .inflate(layoutId, this, false));
+    }
+
+    public void setLoadingView(View view) {
+        LoadView = view;
+    }
+
+    private void checkLoading() {
+        if (wrapperAdapter != null && LoadView != null) {
+            wrapperAdapter.updateStateView(WrapperAdapter.STATE_LOADING);
+        }
+    }
+    /*-------------------------------setLoadingView-----------------------------------------end--------*/
+
 
     @Override public void setAdapter(Adapter adapter) {
         if (getAdapter() != null) {
@@ -222,7 +272,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         if (config == null && loadListener != null && isInitLoad()) {
             initRefresh();
             initLoading();
-            checkEmpty();
+            checkLoading();
         }
     }
 
@@ -326,11 +376,19 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         if (config != null) {
             if (refreshHeader == null) refreshHeader = config.getRefreshHeader(getContext());
             if (loadingFooter == null) loadingFooter = config.getLoadingFooter(getContext());
+            if (LoadView == null) LoadView = config.getLoadingView(getContext());
+            if (errorView == null) errorView = config.getErrorView(getContext());
             if (emptyView == null) emptyView = config.getEmptyView(getContext());
-            if (emptyView != null) emptyView.setTag(false);//no empty
-            if (emptyView != null && emptyView instanceof AbsEmptyView) {
-                ((AbsEmptyView) emptyView).setEmptyRetryListener(new AbsEmptyView.EmptyRetryListener() {
-                    @Override public void emptyRetry(boolean isAnim) {
+            if (emptyView != null && emptyView instanceof AbsStateView) {
+                ((AbsStateView) emptyView).setRetryListener(new AbsStateView.RetryListener() {
+                    @Override public void retry(boolean isAnim) {
+                        startRefresh(isAnim);
+                    }
+                });
+            }
+            if (errorView != null && errorView instanceof AbsStateView) {
+                ((AbsStateView) errorView).setRetryListener(new AbsStateView.RetryListener() {
+                    @Override public void retry(boolean isAnim) {
                         startRefresh(isAnim);
                     }
                 });
@@ -386,6 +444,11 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             isLoading = false;
             refreshHeader.refreshComplete();
         }
+    }
+
+    public void refreshError() {
+        refreshComplete();
+        checkError();
     }
     /*------------------------------------------刷新头部操作----------------------------end--------*/
 
@@ -449,14 +512,14 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         footers.put(FOOTER_TYPE++, view);
         if (wrapperAdapter != null) {
             wrapperAdapter.notifyAddFooter();
-            if (view != emptyView) checkEmpty();
+            checkEmpty();
         }
     }
 
     public void removeFooter(View view) {
         if (wrapperAdapter != null) {
             wrapperAdapter.removeFooter(view);
-            if (view != emptyView) checkEmpty();
+            checkEmpty();
         }
     }
 
@@ -503,6 +566,10 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     private class WrapperAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private final int REFRESH_HEADER = 1314520;
         private final int LOAD_FOOTER = HEADER_TYPE + FOOTER_TYPE;
+        private static final int STATE_LOADING = 1;
+        private static final int STATE_EMPTY = 2;
+        private static final int STATE_ERROR = 3;
+        private static final int STATE_NORMAL = 0;
         private final ClickListener listener;
         private final Adapter adapter;
 
@@ -579,22 +646,51 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             }
         }
 
-        private void updateEmptyState(boolean isShow) {
-            Object tag = emptyView.getTag();
-            boolean isCurrentEmpty = tag instanceof Boolean && (boolean) tag;
-            if (isShow) {
-                if (!isCurrentEmpty) {
-                    if (isLoadingEnable) removeFooter(loadingFooter);
-                    addFooter(emptyView);
-                    emptyView.setTag(true);//empty
-                }
-            } else {
-                if (isCurrentEmpty) {
-                    removeFooter(emptyView);
+        private void updateStateView(int state) {
+            switch (state) {
+                case STATE_LOADING:
+                    if (currentState == STATE_LOADING) return;
+                    if (isLoadingEnable) removeStateView(loadingFooter);
+                    if (currentState == STATE_EMPTY) removeStateView(emptyView);
+                    if (currentState == STATE_ERROR) removeStateView(errorView);
+                    currentState = STATE_LOADING;
+                    addStateView(LoadView);
+                    break;
+                case STATE_EMPTY:
+                    if (currentState == STATE_EMPTY) return;
+                    if (isLoadingEnable) removeStateView(loadingFooter);
+                    if (currentState == STATE_LOADING) removeStateView(LoadView);
+                    if (currentState == STATE_ERROR) removeStateView(errorView);
+                    currentState = STATE_EMPTY;
+                    addStateView(emptyView);
+                    break;
+                case STATE_ERROR:
+                    if (currentState == STATE_ERROR) return;
+                    if (isLoadingEnable) removeStateView(loadingFooter);
+                    if (currentState == STATE_LOADING) removeStateView(LoadView);
+                    if (currentState == STATE_EMPTY) removeStateView(emptyView);
+                    currentState = STATE_ERROR;
+                    addStateView(errorView);
+                    break;
+                default:
+                    if (currentState == STATE_NORMAL) return;
                     if (isLoadingEnable) setLoadFooter(loadingFooter);
-                    emptyView.setTag(false);//no empty
-                }
+                    if (currentState == STATE_LOADING) removeStateView(LoadView);
+                    if (currentState == STATE_EMPTY) removeStateView(emptyView);
+                    if (currentState == STATE_ERROR) removeStateView(errorView);
+                    currentState = STATE_NORMAL;
             }
+        }
+
+        private void addStateView(View view) {
+            footers.put(FOOTER_TYPE++, view);
+            if (wrapperAdapter != null) {
+                wrapperAdapter.notifyAddFooter();
+            }
+        }
+
+        private void removeStateView(View view) {
+            removeFooter(view);
         }
 
         @Override public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -704,7 +800,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     }
 
 
-    /*-----------------------------------Item的点击事件-------------------------------------*/
+    /*-----------------------------------Item的点击事件------------------------------start-------*/
     private class ClickListener implements View.OnClickListener {
         @Override public void onClick(View v) {
             if (clickListener != null) {
@@ -723,7 +819,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     public void setItemClickListener(ItemClickListener listener) {
         clickListener = listener;
     }
-    /*-----------------------------------Item的点击事件-------------------------------------*/
+    /*-----------------------------------Item的点击事件------------------------------end-------*/
 
 
     /**
@@ -762,10 +858,10 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         }
 
         /**
-         * 刷新头部和加载尾部不需要分割线
+         * 刷新头部和加载尾部以及stateView不需要分割线
          */
         private boolean isLoadView(View view) {
-            return refreshHeader == view || loadingFooter == view || emptyView == view;
+            return refreshHeader == view || loadingFooter == view || currentState != 0;
         }
 
         @Override public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
