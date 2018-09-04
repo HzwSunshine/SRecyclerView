@@ -156,6 +156,11 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         }
         if (refreshHeader != null) refreshHeader.srvDetachedFromWindow();
         if (loadingFooter != null) loadingFooter.srvDetachedFromWindow();
+        headers.clear();
+        footers.clear();
+        clearOnScrollListeners();
+        loadListener = null;
+        wrapperAdapter = null;
     }
 
     @Override public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
@@ -343,9 +348,10 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     public void setLoadListener(LoadListener listener) {
         loadListener = listener;
         //已经调用setAdapter，但是没有调用此方法
-        if (getAdapter() != null && isInitLoad()) {
+        if (getAdapter() != null && isInitLoad() && loadListener != null) {
             initRefresh();
             initLoading();
+            checkLoading();
         }
     }
 
@@ -361,7 +367,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         wrapperAdapter.setRefreshHeader(refreshHeader);
         refreshHeader.setRefreshListener(new AbsRefreshHeader.RefreshListener() {
             @Override public void refresh() {
-                if (loadListener != null) loadListener.refresh();
+                loadListener.refresh();
             }
         });
     }
@@ -427,13 +433,13 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             isLoading = false;
             refreshHeader.refreshComplete();
             loadingFooter.reset();
-            loadingFooter.setTag(false);//no scroll
+            loadingFooter.setTag(false);//isScroll
         }
     }
 
     public void startRefresh(boolean isAnim) {
         if (refreshHeader != null && isRefreshEnable && getAdapter() != null) {
-            scrollToPosition(0);
+            if (isAnim) scrollToPosition(0);
             refreshHeader.startRefresh(isAnim);
         }
     }
@@ -462,7 +468,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         loadingFooter.initFooter();
         wrapperAdapter.loadingEnable(isLoadingEnable);
         //刷新和加载只支持垂直方向的LinearLayoutManager和GridLayoutManager布局
-        loadingFooter.setTag(false);//no scroll
+        loadingFooter.setTag(false);//isScroll
         loadingFooter.setErrorRetryListener(new AbsLoadFooter.ErrorRetryListener() {
             @Override public void errorRetry() {
                 judgeLastItem();
@@ -641,7 +647,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
                 }
             } else {
                 if (footers.get(LOAD_FOOTER) != null) {
-                    removeHeader(loadingFooter);
+                    removeFooter(loadingFooter);
                 }
             }
         }
@@ -650,43 +656,56 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             switch (state) {
                 case STATE_LOADING:
                     if (currentState == STATE_LOADING) return;
-                    if (isLoadingEnable) removeStateView(loadingFooter);
-                    if (currentState == STATE_EMPTY) removeStateView(emptyView);
-                    if (currentState == STATE_ERROR) removeStateView(errorView);
-                    currentState = STATE_LOADING;
+                    initStateView(STATE_LOADING);
+                    initLoadingFooter(false);
                     addStateView(LoadView);
                     break;
                 case STATE_EMPTY:
                     if (currentState == STATE_EMPTY) return;
-                    if (isLoadingEnable) removeStateView(loadingFooter);
-                    if (currentState == STATE_LOADING) removeStateView(LoadView);
-                    if (currentState == STATE_ERROR) removeStateView(errorView);
-                    currentState = STATE_EMPTY;
+                    initStateView(STATE_EMPTY);
+                    initLoadingFooter(false);
                     addStateView(emptyView);
                     break;
                 case STATE_ERROR:
                     if (currentState == STATE_ERROR) return;
-                    if (isLoadingEnable) removeStateView(loadingFooter);
-                    if (currentState == STATE_LOADING) removeStateView(LoadView);
-                    if (currentState == STATE_EMPTY) removeStateView(emptyView);
-                    currentState = STATE_ERROR;
+                    initStateView(STATE_ERROR);
+                    initLoadingFooter(false);
                     addStateView(errorView);
                     break;
                 default:
                     if (currentState == STATE_NORMAL) return;
-                    if (isLoadingEnable) setLoadFooter(loadingFooter);
-                    if (currentState == STATE_LOADING) removeStateView(LoadView);
-                    if (currentState == STATE_EMPTY) removeStateView(emptyView);
-                    if (currentState == STATE_ERROR) removeStateView(errorView);
-                    currentState = STATE_NORMAL;
+                    initStateView(STATE_NORMAL);
+                    initLoadingFooter(true);
             }
         }
 
+        private void initStateView(int state) {
+            if (currentState == STATE_LOADING) {
+                removeStateView(LoadView);
+            } else if (currentState == STATE_EMPTY) {
+                removeStateView(emptyView);
+            } else if (currentState == STATE_ERROR) {
+                removeStateView(errorView);
+            }
+            currentState = state;
+        }
+
+        /**
+         * 状态布局显示隐藏时，加载尾部的添加和删除操作，仅用于updateStateView()方法
+         */
+        private void initLoadingFooter(boolean isAdd) {
+            if (!isLoadingEnable) return;
+            loadingEnable(isAdd);
+        }
+
+        /**
+         * 状态布局以footer的方式添加显示
+         *
+         * @param view stateView
+         */
         private void addStateView(View view) {
             footers.put(FOOTER_TYPE++, view);
-            if (wrapperAdapter != null) {
-                wrapperAdapter.notifyAddFooter();
-            }
+            notifyAddFooter();
         }
 
         private void removeStateView(View view) {
