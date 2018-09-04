@@ -31,12 +31,12 @@
 ##  Gradle
 **Use Gradle**:&nbsp;&nbsp;&nbsp;&nbsp;
 
-     compile 'com.github.hzw:srecyclerview:1.2.3'
+     compile 'com.github.hzw:srecyclerview:1.2.4'
 
 
 *SRecyclerView中使用了com.android.support:design:26.1.0，如果需要使用你项目中的版本，可用以下方式：*
 
-    compile ("com.github.hzw:srecyclerview:1.2.3"){ exclude group:'com.android.support' }
+    compile ("com.github.hzw:srecyclerview:1.2.4"){ exclude group:'com.android.support' }
 
 
 
@@ -150,7 +150,7 @@
 
 ## Update History
 
-> * 2018.9.3     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.2.3 </br>
+> * 2018.9.4     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.2.4 </br>
 添加对加载中布局，错误布局的支持
 
 > * 2018.7.11     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.2.2 </br>
