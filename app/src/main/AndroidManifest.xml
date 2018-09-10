@@ -23,7 +23,6 @@
             android:name="com.hzw.srecyclerviewproject.TestSRVModule"
             android:value="SRecyclerViewModule"/>
 
-        <activity android:name=".TestActivity"></activity>
     </application>
 
 </manifest>

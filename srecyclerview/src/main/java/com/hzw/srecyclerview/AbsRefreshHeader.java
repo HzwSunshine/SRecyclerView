@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -45,8 +44,7 @@ public abstract class AbsRefreshHeader extends LinearLayout {
     }
 
     final void initHeader() {
-        ViewGroup.LayoutParams params = new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0);
-        setLayoutParams(params);
+        setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0));
         //获取子类的配置
         duration = getRefreshDuration();
         refreshHeight = getRefreshHeight();

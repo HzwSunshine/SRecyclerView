@@ -10,7 +10,7 @@ import android.content.pm.PackageManager;
  */
 class SRVConfig {
 
-    private static final String SRV_CONFIG_VALUE = "SRecyclerViewModule";
+    private static final String SRV_CONFIG_VALUE = SRecyclerViewModule.class.getSimpleName();
     private volatile static SRVConfig instance;
     private SRecyclerViewModule module;
 

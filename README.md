@@ -4,12 +4,12 @@
 
 #### 主要功能有：
 1. 下拉刷新，滑到底部加载
-2. 支持添加多个头部和尾部
+2. 支持添加或删除多个头部和尾部
 3. 支持自定义刷新头部和加载尾部
 4. 支持全局配置刷新头部，加载尾部
 5. 支持代码设置刷新头部，加载尾部（满足某个列表的特殊要求）
 6. 支持全局及代码设置加载中布局，空布局和错误布局
-6. 支持空布局（EmptyView）显示时的下拉刷新，及空布局的点击刷新重试
+6. 支持加载中布局，空布局和错误布局显示时的下拉刷新，及点击刷新重试
 7. 支持加载尾部的无数据和加载错误的显示及加载错误时的点击加载重试
 8. 支持设置LinearLayoutManager的分割线，以及纵向时分割线的左右距离
 9. 支持数据不满一屏时的上滑加载
@@ -31,12 +31,12 @@
 ##  Gradle
 **Use Gradle**:&nbsp;&nbsp;&nbsp;&nbsp;
 
-     compile 'com.github.hzw:srecyclerview:1.2.4'
+     compile 'com.github.hzw:srecyclerview:1.2.5'
 
 
 *SRecyclerView中使用了com.android.support:design:26.1.0，如果需要使用你项目中的版本，可用以下方式：*
 
-    compile ("com.github.hzw:srecyclerview:1.2.4"){ exclude group:'com.android.support' }
+    compile ("com.github.hzw:srecyclerview:1.2.5"){ exclude group:'com.android.support' }
 
 
 

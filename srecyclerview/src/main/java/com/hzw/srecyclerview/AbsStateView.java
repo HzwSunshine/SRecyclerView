@@ -25,9 +25,7 @@ public abstract class AbsStateView extends FrameLayout {
 
     public AbsStateView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        ViewGroup.LayoutParams params = new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                                            ViewGroup.LayoutParams.MATCH_PARENT);
-        setLayoutParams(params);
+        setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         init();
     }
 

@@ -211,36 +211,39 @@ public class MainActivity extends AppCompatActivity {
 
 
     private TestConfigDialog dialog;
-    private View header, footer;
+    private List<View> headers = new ArrayList<>();
+    private List<View> footers = new ArrayList<>();
 
     private void showConfigDialog() {
         if (dialog == null) {
             dialog = new TestConfigDialog(this);
             dialog.setTestListener(new TestConfigDialog.TestListener() {
                 @Override public void addHeader() {
-                    if (header != null) return;
-                    header = LayoutInflater.from(MainActivity.this)
+                    View header = LayoutInflater.from(MainActivity.this)
                             .inflate(R.layout.header_test, recyclerView, false);
                     recyclerView.addHeader(header);
+                    headers.add(header);
                 }
 
                 @Override public void removeHeader() {
-                    if (header == null) return;
+                    if (headers.size() == 0) return;
+                    View header = headers.get(headers.size() - 1);
                     recyclerView.removeHeader(header);
-                    header = null;
+                    headers.remove(header);
                 }
 
                 @Override public void addFooter() {
-                    if (footer != null) return;
-                    footer = LayoutInflater.from(MainActivity.this)
+                    View footer = LayoutInflater.from(MainActivity.this)
                             .inflate(R.layout.footer_test, recyclerView, false);
                     recyclerView.addFooter(footer);
+                    footers.add(footer);
                 }
 
                 @Override public void removeFooter() {
-                    if (footer == null) return;
+                    if (footers.size() == 0) return;
+                    View footer = footers.get(footers.size() - 1);
                     recyclerView.removeFooter(footer);
-                    footer = null;
+                    footers.remove(footer);
                 }
 
                 @Override public void startRefresh() {
