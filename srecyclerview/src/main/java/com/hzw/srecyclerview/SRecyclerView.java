@@ -197,7 +197,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         }
 
         private int getOffset() {
-            return wrapperAdapter.getOnlyHeaderCount();
+            return wrapperAdapter.getHeaderCount();
         }
     };
 
@@ -273,6 +273,9 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         wrapperAdapter = new WrapperAdapter(adapter);
         super.setAdapter(wrapperAdapter);
         adapter.registerAdapterDataObserver(mObserver);
+        if (divider == null) {
+            setDivider(dividerColor, dividerHeight, dividerLeft, dividerRight);
+        }
         //设置了加载功能时，初始化刷新头和加载尾部
         if (config == null && loadListener != null && isInitLoad()) {
             initRefresh();
@@ -308,7 +311,9 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
     @Override public void setLayoutManager(LayoutManager layout) {
         super.setLayoutManager(layout);
-        setDivider(dividerColor, dividerHeight, dividerLeft, dividerRight);
+        if (!(layout instanceof LinearLayoutManager) || (layout instanceof GridLayoutManager)) {
+            if (divider != null) removeItemDecoration(divider);
+        }
     }
 
     public void setDivider(int color, float height, float dividerLeft, float dividerRight) {
@@ -316,13 +321,9 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         boolean isSetDivider =
                 color != NO_COLOR && height != 0 && layout != null && layout instanceof LinearLayoutManager;
         boolean isGridManager = layout instanceof GridLayoutManager;
-        if (divider != null) removeItemDecoration(divider);
         //只对LinearLayoutManager设置分割线
         if (isSetDivider && !isGridManager) {
-            this.dividerColor = color;
-            this.dividerHeight = height;
-            this.dividerLeft = dividerLeft;
-            this.dividerRight = dividerRight;
+            if (divider != null) removeItemDecoration(divider);
             LinearLayoutManager manager = (LinearLayoutManager) layout;
             if (manager.getOrientation() == LinearLayoutManager.VERTICAL) {
                 divider = new SRVDivider(LinearLayoutManager.VERTICAL);
