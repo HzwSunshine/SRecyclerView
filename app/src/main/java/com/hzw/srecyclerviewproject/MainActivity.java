@@ -11,9 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.hzw.srecyclerview.BaseSRVAdapter;
 import com.hzw.srecyclerview.SRVHolder;
 import com.hzw.srecyclerview.SRecyclerView;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,21 +25,25 @@ public class MainActivity extends AppCompatActivity {
     private List<String> list = new ArrayList<>();
     private SRecyclerView recyclerView;
 
-    @Override protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         recyclerView = findViewById(R.id.srv_test);
         findViewById(R.id.test).setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
+            @Override
+            public void onClick(View v) {
                 showConfigDialog();
             }
         });
 
         //如果设置了加载监听，就是需要刷新加载功能，如果没有设置加载监听，那么就没有下拉与底部加载
         recyclerView.setLoadListener(new SRecyclerView.LoadListener() {
-            @Override public void refresh() {
+            @Override
+            public void refresh() {
                 new Handler().postDelayed(new Runnable() {
-                    @Override public void run() {
+                    @Override
+                    public void run() {
                         if (SRVTestConfig.getInstance()
                                 .isRefreshEmpty()) {
                             recyclerView.getAdapter()
@@ -55,9 +61,11 @@ public class MainActivity extends AppCompatActivity {
                 }, 2000);
             }
 
-            @Override public void loading() {
+            @Override
+            public void loading() {
                 new Handler().postDelayed(new Runnable() {
-                    @Override public void run() {
+                    @Override
+                    public void run() {
                         if (SRVTestConfig.getInstance()
                                 .isLoadingError()) {
                             recyclerView.loadingError();
@@ -77,9 +85,13 @@ public class MainActivity extends AppCompatActivity {
 
         //item的点击事件
         recyclerView.setItemClickListener(new SRecyclerView.ItemClickListener() {
-            @Override public void click(View v, int position) {
+            @Override
+            public void click(View v, int position) {
                 Toast.makeText(getApplication(), "位置：  " + position, Toast.LENGTH_SHORT)
                         .show();
+
+                list.set(list.size() - 1, "这是通知改变的");
+                recyclerView.getAdapter().notifyItemChanged(list.size() - 1);
             }
         });
 
@@ -145,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        int last = list.size() + 1;
+        int last = list.size();
         for (int i = 0; i < 15; i++) {
             list.add("数据  " + index++);
         }
@@ -162,7 +174,8 @@ public class MainActivity extends AppCompatActivity {
             super(list, R.layout.item_test);
         }
 
-        @Override public void onBindView(SRVHolder holder, String data, int i) {
+        @Override
+        public void onBindView(SRVHolder holder, String data, int i) {
             holder.setTextView(R.id.tv_item_test, data);
             //            holder.setTextView(0, "123")
             //                    .setTextView(1, "234");
@@ -182,16 +195,19 @@ public class MainActivity extends AppCompatActivity {
             inflater = LayoutInflater.from(context);
         }
 
-        @Override public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+        @Override
+        public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = inflater.inflate(R.layout.item_test, parent, false);
             return new Holder(v);
         }
 
-        @Override public void onBindViewHolder(Holder holder, int position) {
+        @Override
+        public void onBindViewHolder(Holder holder, int position) {
             holder.textView.setText(list.get(position));
         }
 
-        @Override public int getItemCount() {
+        @Override
+        public int getItemCount() {
             return list.size();
         }
 
@@ -218,39 +234,45 @@ public class MainActivity extends AppCompatActivity {
         if (dialog == null) {
             dialog = new TestConfigDialog(this);
             dialog.setTestListener(new TestConfigDialog.TestListener() {
-                @Override public void addHeader() {
+                @Override
+                public void addHeader() {
                     View header = LayoutInflater.from(MainActivity.this)
                             .inflate(R.layout.header_test, recyclerView, false);
                     recyclerView.addHeader(header);
                     headers.add(header);
                 }
 
-                @Override public void removeHeader() {
+                @Override
+                public void removeHeader() {
                     if (headers.size() == 0) return;
                     View header = headers.get(headers.size() - 1);
                     recyclerView.removeHeader(header);
                     headers.remove(header);
                 }
 
-                @Override public void addFooter() {
+                @Override
+                public void addFooter() {
                     View footer = LayoutInflater.from(MainActivity.this)
                             .inflate(R.layout.footer_test, recyclerView, false);
                     recyclerView.addFooter(footer);
                     footers.add(footer);
                 }
 
-                @Override public void removeFooter() {
+                @Override
+                public void removeFooter() {
                     if (footers.size() == 0) return;
                     View footer = footers.get(footers.size() - 1);
                     recyclerView.removeFooter(footer);
                     footers.remove(footer);
                 }
 
-                @Override public void startRefresh() {
+                @Override
+                public void startRefresh() {
                     recyclerView.startRefresh(true);
                 }
 
-                @Override public void resetAdapter() {
+                @Override
+                public void resetAdapter() {
                     list.clear();
                     index = 0;
                     for (int i = 0; i < 15; i++) {
@@ -259,11 +281,13 @@ public class MainActivity extends AppCompatActivity {
                     recyclerView.setAdapter(new SRVAdapter(list));
                 }
 
-                @Override public void showEmpty() {
+                @Override
+                public void showEmpty() {
                     reStart();
                 }
 
-                @Override public void showError() {
+                @Override
+                public void showError() {
                     reStart();
                 }
             });

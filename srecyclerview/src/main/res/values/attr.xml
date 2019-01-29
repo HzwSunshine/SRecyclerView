@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="SRecyclerView">
-        <attr name="dividerColor" format="color" />
+        <attr name="dividerColor" format="color|reference" />
         <attr name="dividerHeight" format="dimension" />
         <attr name="dividerLeftMargin" format="dimension" />
         <attr name="dividerRightMargin" format="dimension" />
+        <attr name="firstDividerHeight" format="dimension" />
+        <attr name="lastDividerHeight" format="dimension" />
     </declare-styleable>
 </resources>

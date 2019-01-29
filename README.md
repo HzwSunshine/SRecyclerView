@@ -31,12 +31,12 @@
 ##  Gradle
 **Use Gradle**:&nbsp;&nbsp;&nbsp;&nbsp;
 
-     compile 'com.github.hzw:srecyclerview:1.2.6'
+     compile 'com.github.hzw:srecyclerview:1.2.7'
 
 
 *SRecyclerView中使用了com.android.support:design:26.1.0，如果需要使用你项目中的版本，可用以下方式：*
 
-    compile ("com.github.hzw:srecyclerview:1.2.6"){ exclude group:'com.android.support' }
+    compile ("com.github.hzw:srecyclerview:1.2.7"){ exclude group:'com.android.support' }
 
 
 

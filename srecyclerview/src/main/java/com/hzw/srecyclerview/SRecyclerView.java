@@ -3,6 +3,7 @@ package com.hzw.srecyclerview;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.LayoutRes;
@@ -19,6 +20,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+
 import java.util.List;
 
 /**
@@ -27,7 +29,6 @@ import java.util.List;
  */
 public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffsetChangedListener {
 
-    private static final int NO_COLOR = -1;
     private AbsRefreshHeader refreshHeader;
     private WrapperAdapter wrapperAdapter;
     private AbsLoadFooter loadingFooter;
@@ -80,7 +81,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     private void init(AttributeSet attrs, int def) {
         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.SRecyclerView, def, 0);
         dividerHeight = a.getDimension(R.styleable.SRecyclerView_dividerHeight, 0);
-        dividerColor = a.getColor(R.styleable.SRecyclerView_dividerColor, NO_COLOR);
+        dividerColor = a.getColor(R.styleable.SRecyclerView_dividerColor, Color.TRANSPARENT);
         dividerRight = a.getDimension(R.styleable.SRecyclerView_dividerRightMargin, 0);
         dividerLeft = a.getDimension(R.styleable.SRecyclerView_dividerLeftMargin, 0);
         a.recycle();
@@ -90,7 +91,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         setLayoutManager(manager);
     }
 
-    @Override public boolean onTouchEvent(MotionEvent e) {
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
         if (refreshHeader == null) return super.onTouchEvent(e);
         switch (e.getAction()) {
             case MotionEvent.ACTION_MOVE:
@@ -124,7 +126,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         return refreshHeader.getParent() != null;
     }
 
-    @Override protected void onAttachedToWindow() {
+    @Override
+    protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         ViewParent parent = getParent();
         while (parent != null) {
@@ -145,7 +148,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         }
     }
 
-    @Override protected void onDetachedFromWindow() {
+    @Override
+    protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         clearOnScrollListeners();
         if (getAdapter() != null && mObserver != null) {
@@ -163,36 +167,43 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         wrapperAdapter = null;
     }
 
-    @Override public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
         isAppBarExpand = verticalOffset == 0;
     }
 
     private final AdapterDataObserver mObserver = new AdapterDataObserver() {
-        @Override public void onChanged() {
+        @Override
+        public void onChanged() {
             wrapperAdapter.notifyDataSetChanged();
             checkEmpty();
         }
 
-        @Override public void onItemRangeInserted(int positionStart, int itemCount) {
+        @Override
+        public void onItemRangeInserted(int positionStart, int itemCount) {
             wrapperAdapter.notifyItemRangeInserted(positionStart + getOffset(), itemCount);
             checkEmpty();
         }
 
-        @Override public void onItemRangeRemoved(int positionStart, int itemCount) {
+        @Override
+        public void onItemRangeRemoved(int positionStart, int itemCount) {
             wrapperAdapter.notifyItemRangeRemoved(positionStart + getOffset(), itemCount);
             checkEmpty();
         }
 
-        @Override public void onItemRangeChanged(int positionStart, int itemCount) {
+        @Override
+        public void onItemRangeChanged(int positionStart, int itemCount) {
             wrapperAdapter.notifyItemRangeChanged(positionStart + getOffset(), itemCount);
         }
 
-        @Override public void onItemRangeChanged(int positionStart, int itemCount, Object payload) {
+        @Override
+        public void onItemRangeChanged(int positionStart, int itemCount, Object payload) {
             super.onItemRangeChanged(positionStart, itemCount, payload);
             wrapperAdapter.notifyItemRangeChanged(positionStart + getOffset(), itemCount, payload);
         }
 
-        @Override public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+        @Override
+        public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
             wrapperAdapter.notifyItemMoved(fromPosition + getOffset(), toPosition);
         }
 
@@ -205,7 +216,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     /*-------------------------------setEmptyView-----------------------------------------start--------*/
     public void setEmptyView(@LayoutRes int layoutId) {
         setEmptyView(LayoutInflater.from(getContext())
-                             .inflate(layoutId, this, false));
+                .inflate(layoutId, this, false));
     }
 
     public void setEmptyView(View view) {
@@ -230,7 +241,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     /*-------------------------------setErrorView-----------------------------------------start--------*/
     public void setErrorView(@LayoutRes int layoutId) {
         setErrorView(LayoutInflater.from(getContext())
-                             .inflate(layoutId, this, false));
+                .inflate(layoutId, this, false));
     }
 
     public void setErrorView(View view) {
@@ -251,7 +262,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     /*-------------------------------setLoadingView-----------------------------------------start--------*/
     public void setLoadingView(@LayoutRes int layoutId) {
         setLoadingView(LayoutInflater.from(getContext())
-                               .inflate(layoutId, this, false));
+                .inflate(layoutId, this, false));
     }
 
     public void setLoadingView(View view) {
@@ -266,7 +277,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     /*-------------------------------setLoadingView-----------------------------------------end--------*/
 
 
-    @Override public void setAdapter(Adapter adapter) {
+    @Override
+    public void setAdapter(Adapter adapter) {
         if (getAdapter() != null) {
             getAdapter().unregisterAdapterDataObserver(mObserver);
         }
@@ -284,7 +296,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         }
     }
 
-    @Override public Adapter getAdapter() {
+    @Override
+    public Adapter getAdapter() {
         if (wrapperAdapter != null) {
             return wrapperAdapter.getAdapter();
         }
@@ -309,7 +322,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         return true;
     }
 
-    @Override public void setLayoutManager(LayoutManager layout) {
+    @Override
+    public void setLayoutManager(LayoutManager layout) {
         super.setLayoutManager(layout);
         if (!(layout instanceof LinearLayoutManager) || (layout instanceof GridLayoutManager)) {
             if (divider != null) removeItemDecoration(divider);
@@ -318,8 +332,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
     public void setDivider(int color, float height, float dividerLeft, float dividerRight) {
         LayoutManager layout = getLayoutManager();
-        boolean isSetDivider =
-                color != NO_COLOR && height != 0 && layout != null && layout instanceof LinearLayoutManager;
+        boolean isSetDivider = height != 0 && layout instanceof LinearLayoutManager;
         boolean isGridManager = layout instanceof GridLayoutManager;
         //只对LinearLayoutManager设置分割线
         if (isSetDivider && !isGridManager) {
@@ -367,7 +380,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         refreshHeader.initHeader();
         wrapperAdapter.setRefreshHeader(refreshHeader);
         refreshHeader.setRefreshListener(new AbsRefreshHeader.RefreshListener() {
-            @Override public void refresh() {
+            @Override
+            public void refresh() {
                 loadListener.refresh();
             }
         });
@@ -388,14 +402,16 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             if (emptyView == null) emptyView = config.getEmptyView(getContext());
             if (emptyView instanceof AbsStateView) {
                 ((AbsStateView) emptyView).setRetryListener(new AbsStateView.RetryListener() {
-                    @Override public void retry(boolean isAnim) {
+                    @Override
+                    public void retry(boolean isAnim) {
                         startRefresh(isAnim);
                     }
                 });
             }
             if (errorView instanceof AbsStateView) {
                 ((AbsStateView) errorView).setRetryListener(new AbsStateView.RetryListener() {
-                    @Override public void retry(boolean isAnim) {
+                    @Override
+                    public void retry(boolean isAnim) {
                         startRefresh(isAnim);
                     }
                 });
@@ -471,19 +487,22 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         //刷新和加载只支持垂直方向的LinearLayoutManager和GridLayoutManager布局
         loadingFooter.setTag(false);//isScroll
         loadingFooter.setErrorRetryListener(new AbsLoadFooter.ErrorRetryListener() {
-            @Override public void errorRetry() {
+            @Override
+            public void errorRetry() {
                 judgeLastItem();
             }
         });
         addOnScrollListener(new OnScrollListener() {
-            @Override public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 boolean isScroll = (boolean) loadingFooter.getTag();
                 if (!isScroll && newState == SCROLL_STATE_IDLE && isLoadingEnable && isPullUp) {
                     judgeLastItem();
                 }
             }
 
-            @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (dy > 0 && isLoadingEnable) {
                     loadingFooter.setTag(true);//current scroll
                     judgeLastItem();
@@ -495,7 +514,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     /**
      * 判断是否开始加载更多，只有滑动到最后一个Item，并且当前有数据时，才会加载更多
      */
-    private void judgeLastItem() {
+    private synchronized void judgeLastItem() {
         LinearLayoutManager manager = (LinearLayoutManager) getLayoutManager();
         int last = manager.findLastVisibleItemPosition();
         if (!isLoading && last > 1 && last == (wrapperAdapter.getItemCount() - 1)) {
@@ -566,7 +585,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     private void checkAddView(View view) {
         if (view.getParent() != null) {
             throw new IllegalStateException("The specified child already has a parent. "
-                                                    + "You must call removeView() on the child's parent first.");
+                    + "You must call removeView() on the child's parent first.");
         }
     }
 
@@ -713,7 +732,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             removeFooter(view);
         }
 
-        @Override public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             if (headers.get(viewType) != null) {
                 return new Holder(headers.get(viewType));
             } else if (footers.get(viewType) != null) {
@@ -722,7 +742,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             return adapter.onCreateViewHolder(parent, viewType);
         }
 
-        @Override public void onBindViewHolder(ViewHolder holder, int position) {
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
             srvBindViewHolder(holder, position, null);
         }
 
@@ -739,11 +760,13 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             }
         }
 
-        @Override public void onBindViewHolder(ViewHolder holder, int position, List<Object> payloads) {
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position, List<Object> payloads) {
             srvBindViewHolder(holder, position, payloads);
         }
 
-        @Override public int getItemViewType(int position) {
+        @Override
+        public int getItemViewType(int position) {
             if (isHeader(position)) {
                 return headers.keyAt(position);
             } else if (isFooter(position)) {
@@ -752,7 +775,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             return adapter.getItemViewType(position - getHeaderCount());
         }
 
-        @Override public int getItemCount() {
+        @Override
+        public int getItemCount() {
             return getDataCount() + getHeaderCount() + getFooterCount();
         }
 
@@ -793,13 +817,15 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         /**
          * GridLayout(GridView)的头部特殊处理
          */
-        @Override public void onAttachedToRecyclerView(final RecyclerView recyclerView) {
+        @Override
+        public void onAttachedToRecyclerView(final RecyclerView recyclerView) {
             super.onAttachedToRecyclerView(recyclerView);
             RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
             if (manager instanceof GridLayoutManager) {
                 final GridLayoutManager gridManager = (GridLayoutManager) manager;
                 gridManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-                    @Override public int getSpanSize(int position) {
+                    @Override
+                    public int getSpanSize(int position) {
                         boolean b = isHeader(position) || isFooter(position);
                         return b ? gridManager.getSpanCount() : 1;
                     }
@@ -810,7 +836,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         /**
          * StaggeredGridLayout(瀑布流)的头部特殊处理
          */
-        @Override public void onViewAttachedToWindow(ViewHolder holder) {
+        @Override
+        public void onViewAttachedToWindow(ViewHolder holder) {
             super.onViewAttachedToWindow(holder);
             ViewGroup.LayoutParams params = holder.itemView.getLayoutParams();
             if (params != null && params instanceof StaggeredGridLayoutManager.LayoutParams) {
@@ -826,7 +853,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
 
     /*-----------------------------------Item的点击事件------------------------------start-------*/
     private class ClickListener implements View.OnClickListener {
-        @Override public void onClick(View v) {
+        @Override
+        public void onClick(View v) {
             if (clickListener != null) {
                 int position = (int) v.getTag(R.id.srv_item_click);
                 clickListener.click(v, position);
@@ -864,9 +892,9 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         /**
          * 横向的分割线
          *
-         * @param height 分割线高
-         * @param color 分割线颜色
-         * @param leftMargin 分割线距离左边的距离
+         * @param height      分割线高
+         * @param color       分割线颜色
+         * @param leftMargin  分割线距离左边的距离
          * @param rightMargin 分割线距离右边的距离
          */
         private void initVerticalDivider(float height, int color, float leftMargin, float rightMargin) {
@@ -888,7 +916,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             return refreshHeader == view || loadingFooter == view || currentState != WrapperAdapter.STATE_NORMAL;
         }
 
-        @Override public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+        @Override
+        public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
             if (mOrientation == LinearLayoutManager.VERTICAL) {
                 drawHorizontal(c, parent);
             } else {
@@ -932,7 +961,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
             }
         }
 
-        @Override public void getItemOffsets(Rect outRect, View v, RecyclerView p, RecyclerView.State s) {
+        @Override
+        public void getItemOffsets(Rect outRect, View v, RecyclerView p, RecyclerView.State s) {
             int size = isLoadView(v) ? 0 : (int) dividerHeight;
             if (mOrientation == LinearLayoutManager.VERTICAL) {
                 outRect.set(0, 0, 0, size);
