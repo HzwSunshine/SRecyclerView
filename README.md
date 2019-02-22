@@ -3,7 +3,7 @@
 博客地址：http://blog.csdn.net/hzwailll/article/details/75285924
 
 #### 主要功能有：
-1. 下拉刷新，滑到底部加载
+1. 下拉刷新，滑动到底部加载
 2. 支持添加或删除多个头部和尾部
 3. 支持自定义刷新头部和加载尾部
 4. 支持全局配置刷新头部，加载尾部
@@ -40,7 +40,7 @@
 
 
 
-## 混淆ProGuard
+## 混淆
 -keep public class * implements com.hzw.srecyclerview.SRecyclerViewModule
 
 
@@ -57,40 +57,6 @@
         app:dividerRightMargin="0dp">
     </com.hzw.srecyclerview.SRecyclerView>
 ```
-**全局配置**
-
-```
-        //SRecyclerView的刷新头部和加载尾部的全局配置需要新建一个类，并实现SRecyclerViewModule接口
-        public class TestSRVModule implements SRecyclerViewModule {
-            @Override
-            public AbsRefreshHeader getRefreshHeader(Context context) {
-                //也可以不配置，返回null，使用默认的加载UI
-                return new TestRefreshHeader(context);
-                //return null;
-            }
-            //对应的还有全局加载尾部和空布局的配置
-            ...
-        }
-        //并在AndroidManifest.xml中添加meta-data，
-        //对SRV进行全局配置，name为实现类的路径，value必须为接口名称： "SRecyclerViewModule"
-        <meta-data
-            android:name="com.hzw.srecyclerviewproject.TestSRVModule"
-            android:value="SRecyclerViewModule" />
-
-        //示例自定义刷新头部，相应的自定义加载尾部和自定义空布局都一样，只需要继承对应的抽象类
-        具体自定义的步骤请参考demo，很简单就不贴代码了，占地方 ^v^
-
-        ---* 以上是对全局配置的示例，当然你也可以不用做任何配置，如果默认的样式能满足你的情况的话 *---
-
-        //为了满足某个列表有特殊的刷新头部和加载尾部，以及空布局的情况，可以在代码中设置
-        //---setRefreshHeader方法和setLoadingFooter方法需要再setAdapter方法之前设置才有效---
-        recyclerView.setRefreshHeader(new TestRefreshHeader(this));
-        recyclerView.setLoadingFooter(new TestLoadFooter(this));
-        //代码中设置一个EmptyView
-        recyclerView.setEmptyView(emptyView);
-```
-
-
 
 **code**
 
@@ -141,14 +107,50 @@
         //代码的刷新，应该在setAdapter方法之后调用，true表示有刷新动画，false无动画
         recyclerView.startRefresh(true);
 
-        更多使用方法请参考demo...
+        //更多使用方法请参考demo...
 ```
 
+**全局配置**
 
+如果需要自定义刷新头部或加载尾部的样式，以自定义刷新头部为例，有两种方式：
+1. 新建类并实现AbsRefreshHeader，并在代码中调用**SrecyclerView.setRefreshHeader(new YourRefreshHeader(context))**，为当前的刷新列表设置你自定义的刷新头部
+2. 使用全局配置方式，如下所示：
 
+```     
+        // 1. SRecyclerView的刷新头部和加载尾部的全局配置需要新建一个类，并实现SRecyclerViewModule接口
+        public class TestSRVModule implements SRecyclerViewModule {
+            @Override
+            public AbsRefreshHeader getRefreshHeader(Context context) {
+                return new TestRefreshHeader(context);
+            }
+            
+            //对应的还可以配置全局的加载尾部，空布局和错误布局...
+        }
+        
+        // 2. 并在AndroidManifest.xml中添加meta-data，name为实现类的路径，value必须为："SRecyclerViewModule"
+        <meta-data
+            android:name="com.hzw.srecyclerviewproject.TestSRVModule"
+            android:value="SRecyclerViewModule" />
+```
+以上是对全局配置的示例，当然你也可以不用做任何配置，如果默认的样式能满足你的要求的话！<br/>
+为了满足某个列表有特殊的刷新头部或加载尾部或空布局或错误布局的情况，可以在代码中为这个列表单独设置，即方式1，方式1的优先级大于方式2 
+```
+        //一下两个方法需要在setAdapter方法之前设置才有效
+        recyclerView.setRefreshHeader(new TestRefreshHeader(context));
+        recyclerView.setLoadingFooter(new TestLoadFooter(context));
+        
+        //代码中设置一个空布局和错误布局
+        recyclerView.setEmptyView(new TestEmptyView(context));
+        recyclerView.setErrorView(new TestErrorView(context));
+```
+
+<br/><br/>
 
 
 ## Update History
+
+> * 2019.1.29     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.2.7 </br>
+解决了一些小问题，精简代码
 
 > * 2018.9.4     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.2.4 </br>
 添加对加载中布局，错误布局的支持

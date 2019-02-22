@@ -152,7 +152,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         clearOnScrollListeners();
-        if (getAdapter() != null && mObserver != null) {
+        if (getAdapter() != null) {
             getAdapter().unregisterAdapterDataObserver(mObserver);
         }
         if (appBarLayout != null) {
@@ -310,9 +310,8 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
      */
     private boolean isInitLoad() {
         LayoutManager manager = getLayoutManager();
-        if (manager == null
-                || !(manager instanceof LinearLayoutManager)
-                || ((LinearLayoutManager) manager).getOrientation() != VERTICAL) {
+        if (!(manager instanceof LinearLayoutManager) ||
+                ((LinearLayoutManager) manager).getOrientation() != VERTICAL) {
             refreshHeader = null;
             loadingFooter = null;
             isLoadingEnable = false;
@@ -392,8 +391,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
      * 配置的优先级为：代码设置 > SRVConfig配置
      */
     private void initSRVConfig() {
-        config = SRVConfig.getInstance(getContext())
-                .getConfig();
+        config = SRVConfig.getInstance(getContext()).getConfig();
         if (config != null) {
             if (refreshHeader == null) refreshHeader = config.getRefreshHeader(getContext());
             if (loadingFooter == null) loadingFooter = config.getLoadingFooter(getContext());
@@ -840,7 +838,7 @@ public class SRecyclerView extends RecyclerView implements AppBarLayout.OnOffset
         public void onViewAttachedToWindow(ViewHolder holder) {
             super.onViewAttachedToWindow(holder);
             ViewGroup.LayoutParams params = holder.itemView.getLayoutParams();
-            if (params != null && params instanceof StaggeredGridLayoutManager.LayoutParams) {
+            if (params instanceof StaggeredGridLayoutManager.LayoutParams) {
                 if (holder.getLayoutPosition() < getHeaderCount() || holder.getLayoutPosition() > (getHeaderCount()
                         + getDataCount() - 1)) {
                     StaggeredGridLayoutManager.LayoutParams p = (StaggeredGridLayoutManager.LayoutParams) params;

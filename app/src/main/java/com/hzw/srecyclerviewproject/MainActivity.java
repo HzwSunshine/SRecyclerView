@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
         // 代码设置，全局配置。如果两种方法都没有设置，则使用自带的默认刷新头和加载尾
         //recyclerView.setRefreshHeader(new TestRefreshHeader(this));
         //recyclerView.setLoadingFooter(new TestLoadFooter(this));
+        //recyclerView.setErrorView(new TestErrorView(this));
 
 
         //SRecyclerView的刷新头部和加载尾部的全局配置需要新建一个类，
