@@ -152,6 +152,9 @@
 
 ## Update History
 
+> * 2019.3.7     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.2.8 </br>
+支持刷新下滑灵敏度的设置
+
 > * 2019.1.29     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.2.7 </br>
 解决了一些小问题，精简代码
 
