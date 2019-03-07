@@ -35,8 +35,8 @@ public class TestRefreshHeader extends AbsRefreshHeader {
     @Override
     public void init() {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.refresh_view, this, false);
-        clockView = (ClockView) view.findViewById(R.id.v_refresh);
-        refreshText = (TextView) view.findViewById(R.id.tv_refresh);
+        clockView = view.findViewById(R.id.v_refresh);
+        refreshText = view.findViewById(R.id.tv_refresh);
         addView(view);
     }
 
@@ -74,12 +74,20 @@ public class TestRefreshHeader extends AbsRefreshHeader {
     }
 
     /**
+     * 刷新时下拉的灵敏度，数值越大越不灵敏
+     */
+    @Override
+    public int getRefreshSensitivity() {
+        return 1;
+    }
+
+    /**
      * SRecyclerView的onDetachedFromWindow被调用，可能SRecyclerView所在的界面要被销毁，
      * 如果子类中有动画等未完成，可以重写此方法取消动画等耗时操作，避免造成内存泄露
      */
     @Override
     public void srvDetachedFromWindow() {
-        if(clockView!=null){
+        if (clockView != null) {
             clockView.resetClock();
         }
     }

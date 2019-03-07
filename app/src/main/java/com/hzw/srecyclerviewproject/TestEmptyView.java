@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+
 import com.hzw.srecyclerview.AbsStateView;
 
 /**
@@ -27,17 +28,18 @@ public class TestEmptyView extends AbsStateView {
         super(context, attrs, defStyleAttr);
     }
 
-    @Override public void init() {
+    @Override
+    public void init() {
         View view = LayoutInflater.from(getContext())
                 .inflate(R.layout.empty_test, this, true);
 
         //空布局的点击刷新
-        view.findViewById(R.id.empty_click)
-                .setOnClickListener(new OnClickListener() {
-                    @Override public void onClick(View v) {
-                        retry(true);
-                    }
-                });
+        view.findViewById(R.id.empty_click).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                retry(true);
+            }
+        });
     }
 
 }

@@ -42,7 +42,8 @@ public abstract class AbsLoadFooter extends LinearLayout {
     }
 
     final void initFooter() {
-        setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        setLayoutParams(new LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         setVisibility(GONE);
         setGravity(Gravity.CENTER);
         init();
