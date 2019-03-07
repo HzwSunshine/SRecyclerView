@@ -2,6 +2,9 @@
 有刷新和加载功能的RecyclerView</br>
 博客地址：http://blog.csdn.net/hzwailll/article/details/75285924
 
+示例apk： [点击下载](https://github.com/HzwSunshine/SRecyclerView/blob/master/example.apk)
+
+
 #### 主要功能有：
 1. 下拉刷新，滑动到底部加载
 2. 支持添加或删除多个头部和尾部
