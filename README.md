@@ -2,7 +2,7 @@
 有刷新和加载功能的RecyclerView</br>
 博客地址：http://blog.csdn.net/hzwailll/article/details/75285924
 
-示例apk： [点击下载](https://github.com/HzwSunshine/SRecyclerView/blob/master/example.apk)
+示例apk： [点击下载](https://raw.githubusercontent.com/HzwSunshine/SRecyclerView/master/example.apk)
 
 
 #### 主要功能有：
