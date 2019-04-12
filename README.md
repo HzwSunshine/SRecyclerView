@@ -2,6 +2,10 @@
 有刷新和加载功能的RecyclerView</br>
 博客地址：http://blog.csdn.net/hzwailll/article/details/75285924
 
+[ ![Download](https://api.bintray.com/packages/hzwsunshine/maven/srecyclerview/images/download.svg) ](https://bintray.com/hzwsunshine/maven/srecyclerview/_latestVersion)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+
 示例apk： [点击下载](https://github.com/HzwSunshine/SRecyclerView/blob/master/example.apk)
 
 
