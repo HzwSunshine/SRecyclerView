@@ -31,7 +31,7 @@
 3. 不支持滑动到底部时，上拉一段距离才触发加载功能的方式
 4. 不支持类似于ListView式的空布局设置方式，空布局需要为一个单独布局
 
-<img src="https://github.com/HzwSunshine/SRecyclerView/blob/master/app/resource/srecyclerview.gif"  height="330"><img src="https://github.com/HzwSunshine/SRecyclerView/blob/master/app/resource/refresh.gif"  height="330"><img src="https://github.com/HzwSunshine/SRecyclerView/blob/master/app/resource/loading.gif"  height="330">
+<img src="https://github.com/HzwSunshine/SRecyclerView/blob/master/app/resource/srecyclerview.gif"  height="400"><img src="https://github.com/HzwSunshine/SRecyclerView/blob/master/app/resource/refresh.gif"  height="400"><img src="https://github.com/HzwSunshine/SRecyclerView/blob/master/app/resource/loading.gif"  height="400">
 
 
 ##  Gradle
