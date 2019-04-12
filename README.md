@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 
-示例apk： [点击下载](https://github.com/HzwSunshine/SRecyclerView/blob/master/example.apk)
+示例apk： [点击下载](https://raw.githubusercontent.com/HzwSunshine/SRecyclerView/master/example.apk)
 
 
 #### 主要功能有：
@@ -38,13 +38,9 @@
 ##  Gradle
 **Use Gradle**:&nbsp;&nbsp;&nbsp;&nbsp;
 
-     compile 'com.github.hzw:srecyclerview:1.2.8'
+     compile 'com.github.hzw:srecyclerview:1.2.9'
 
-
-*SRecyclerView中使用了com.android.support:design:26.1.0，如果需要使用你项目中的版本，可用以下方式：*
-
-    compile ("com.github.hzw:srecyclerview:1.2.8"){ exclude group:'com.android.support' }
-
+     所需依赖：com.android.support:design:xxx
 
 
 ## 混淆
@@ -54,7 +50,7 @@
 ## 使用
 **xml**
 
-```
+```xml
     <com.hzw.srecyclerview.SRecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -67,7 +63,7 @@
 
 **code**
 
-```
+```java
         //如果设置了加载监听，就是需要刷新加载功能，如果没有设置加载监听，那么就没有下拉与底部加载
         recyclerView.setLoadListener(new SRecyclerView.LoadListener() {
             @Override
@@ -123,7 +119,7 @@
 1. 新建类并实现AbsRefreshHeader，并在代码中调用**SrecyclerView.setRefreshHeader(new YourRefreshHeader(context))**，为当前的刷新列表设置你自定义的刷新头部
 2. 使用全局配置方式，如下所示：
 
-```     
+```java     
         // 1. SRecyclerView的刷新头部和加载尾部的全局配置需要新建一个类，并实现SRecyclerViewModule接口
         public class TestSRVModule implements SRecyclerViewModule {
             @Override
@@ -141,7 +137,7 @@
 ```
 以上是对全局配置的示例，当然你也可以不用做任何配置，如果默认的样式能满足你的要求的话！<br/>
 为了满足某个列表有特殊的刷新头部或加载尾部或空布局或错误布局的情况，可以在代码中为这个列表单独设置，即方式1，方式1的优先级大于方式2 
-```
+```java
         //一下两个方法需要在setAdapter方法之前设置才有效
         recyclerView.setRefreshHeader(new TestRefreshHeader(context));
         recyclerView.setLoadingFooter(new TestLoadFooter(context));
