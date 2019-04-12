@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 
-示例apk： [点击下载](https://raw.githubusercontent.com/HzwSunshine/SRecyclerView/master/example.apk)
+示例apk： [点击下载](https://raw.githubusercontent.com/HzwSunshine/SRecyclerView/master/app/resource/example.apk)
 
 
 #### 主要功能有：
@@ -32,7 +32,7 @@
 4. 不支持类似于ListView式的空布局设置方式，空布局需要为一个单独布局
 
 
-![image](https://github.com/HzwSunshine/SRecyclerView/blob/master/srecyclerview.gif)
+![image](https://github.com/HzwSunshine/SRecyclerView/blob/master/app/resource/srecyclerview.gif)![image](https://github.com/HzwSunshine/SRecyclerView/blob/master/app/resource/refresh.gif)![image](https://github.com/HzwSunshine/SRecyclerView/blob/master/app/resource/loading.gif)
 
 
 ##  Gradle
