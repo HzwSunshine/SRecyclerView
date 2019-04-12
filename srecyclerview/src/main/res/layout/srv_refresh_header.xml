@@ -29,7 +29,7 @@
         android:layout_marginStart="10dp"
         android:gravity="center"
         android:minEms="5"
-        android:text="@string/refresh_normal"
+        android:text="@string/srv_refresh_normal"
         android:textColor="#333333"
         android:textSize="14sp"
         />

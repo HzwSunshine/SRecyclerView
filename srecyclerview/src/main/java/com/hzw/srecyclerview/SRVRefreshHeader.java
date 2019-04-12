@@ -58,22 +58,22 @@ class SRVRefreshHeader extends AbsRefreshHeader {
             case NORMAL:
                 progress.setVisibility(GONE);
                 icon.setVisibility(VISIBLE);
-                tips.setText(getContext().getString(R.string.refresh_normal));
+                tips.setText(getContext().getString(R.string.srv_refresh_normal));
                 isUp = true;
                 break;
             case REFRESH:
                 progress.setVisibility(VISIBLE);
                 icon.clearAnimation();
                 icon.setVisibility(GONE);
-                tips.setText(getContext().getString(R.string.refreshing));
+                tips.setText(getContext().getString(R.string.srv_refreshing));
                 break;
             case PREPARE_NORMAL:
-                tips.setText(getContext().getString(R.string.refresh_normal));
+                tips.setText(getContext().getString(R.string.srv_refresh_normal));
                 if (!isUp) icon.startAnimation(upAnim);
                 isUp = true;
                 break;
             case PREPARE_REFRESH:
-                tips.setText(getContext().getString(R.string.refresh_prepare));
+                tips.setText(getContext().getString(R.string.srv_refresh_prepare));
                 if (isUp) icon.startAnimation(downAnim);
                 isUp = false;
                 break;

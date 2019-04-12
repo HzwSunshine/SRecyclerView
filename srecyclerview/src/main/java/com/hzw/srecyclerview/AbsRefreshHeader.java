@@ -46,7 +46,7 @@ public abstract class AbsRefreshHeader extends LinearLayout {
 
     final void initHeader() {
         setLayoutParams(new LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                ViewGroup.LayoutParams.MATCH_PARENT, 0));
         //获取子类的配置
         duration = getRefreshDuration();
         refreshHeight = getRefreshHeight();
