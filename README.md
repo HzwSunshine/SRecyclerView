@@ -151,8 +151,8 @@
 
 ## Update History
 
-> * 2019.3.7     &nbsp;&nbsp;&nbsp;&nbsp;版本：1.2.8 </br>
-支持刷新下滑灵敏度的设置
+ [更新历史](https://github.com/HzwSunshine/SRecyclerView/blob/master/app/resource/update_history.md)
+
 
 License
 -------
