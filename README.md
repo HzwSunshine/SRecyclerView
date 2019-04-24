@@ -42,10 +42,6 @@
      所需依赖：com.android.support:design:xxx
 
 
-## 混淆
--keep public class * implements com.hzw.srecyclerview.SRecyclerViewModule
-
-
 ## 使用
 **xml**
 
